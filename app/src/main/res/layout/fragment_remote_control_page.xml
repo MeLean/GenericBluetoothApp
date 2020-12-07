@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+    <include layout="@layout/item_bluetooth_not_enabled" />
+
+    <ScrollView
+        android:id="@+id/remote_control_holder"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        >
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/space_small"
+            android:layout_gravity="center"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            >
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/remote_sent_text_input_layout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="@string/remote_sent_command_hint"
+                android:enabled="false"
+                app:layout_constraintBottom_toTopOf="@+id/remote_up_text_input_layout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                style="@style/TextInputLayoutStyle"
+                >
+
+                <EditText
+                    android:id="@+id/remote_sent_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:imeOptions="actionDone"
+                    tools:ignore="Autofill,LabelFor"
+                    tools:text="some command"
+                    />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/remote_up_text_input_layout"
+                android:layout_width="@dimen/remote_command_size"
+                android:layout_height="wrap_content"
+                android:hint="@string/remote_up_command_hint"
+                app:layout_constraintBottom_toTopOf="@+id/btn_up"
+                app:layout_constraintEnd_toEndOf="@+id/btn_up"
+                app:layout_constraintStart_toStartOf="@+id/btn_up"
+                style="@style/TextInputLayoutStyle"
+                >
+
+                <EditText
+                    android:id="@+id/remote_up_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:imeOptions="actionDone"
+                    tools:ignore="Autofill,LabelFor"
+                    tools:text="up" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageButton
+                android:id="@+id/btn_up"
+                android:src="@drawable/ic_remote_btn_up"
+                app:layout_constraintBottom_toTopOf="@+id/remote_left_text_input_layout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                style="@style/RemoteControlButton"
+                tools:ignore="ContentDescription" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/remote_right_text_input_layout"
+                android:layout_width="@dimen/remote_command_size"
+                android:layout_height="wrap_content"
+                android:hint="@string/remote_right_command_hint"
+                app:layout_constraintBottom_toTopOf="@+id/btn_right"
+                app:layout_constraintEnd_toEndOf="parent"
+                style="@style/TextInputLayoutStyle"
+                >
+
+                <EditText
+                    android:id="@+id/remote_right_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:imeOptions="actionDone"
+                    tools:ignore="Autofill,LabelFor"
+                    tools:text="right" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageButton
+                android:id="@+id/btn_right"
+                android:src="@drawable/ic_remote_btn_right"
+                app:layout_constraintBottom_toTopOf="@+id/remote_down_text_input_layout"
+                app:layout_constraintEnd_toEndOf="@+id/remote_right_text_input_layout"
+                app:layout_constraintStart_toStartOf="@+id/remote_right_text_input_layout"
+                style="@style/RemoteControlButton"
+                tools:ignore="ContentDescription" />
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/remote_left_text_input_layout"
+                android:layout_width="@dimen/remote_command_size"
+                android:layout_height="wrap_content"
+                android:hint="@string/remote_left_command_hint"
+                app:layout_constraintBottom_toTopOf="@+id/btn_left"
+                app:layout_constraintStart_toStartOf="parent"
+                style="@style/TextInputLayoutStyle">
+
+                <EditText
+                    android:id="@+id/remote_left_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:imeOptions="actionDone"
+                    tools:ignore="Autofill,LabelFor"
+                    tools:text="left" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageButton
+                android:id="@+id/btn_left"
+                android:layout_marginStart="@dimen/space_small"
+                android:src="@drawable/ic_remote_btn_left"
+                app:layout_constraintBottom_toTopOf="@+id/remote_down_text_input_layout"
+                app:layout_constraintEnd_toEndOf="@+id/remote_left_text_input_layout"
+                app:layout_constraintStart_toStartOf="@+id/remote_left_text_input_layout"
+                style="@style/RemoteControlButton"
+                tools:ignore="ContentDescription" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/remote_down_text_input_layout"
+                android:layout_width="@dimen/remote_command_size"
+                android:layout_height="wrap_content"
+                android:hint="@string/remote_down_command_hint"
+                app:layout_constraintBottom_toTopOf="@+id/btn_down"
+                app:layout_constraintEnd_toEndOf="@+id/btn_down"
+                app:layout_constraintStart_toStartOf="@+id/btn_down"
+                style="@style/TextInputLayoutStyle"
+                >
+
+                <EditText
+                    android:id="@+id/remote_down_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:imeOptions="actionDone"
+                    tools:ignore="Autofill,LabelFor"
+                    tools:text="down" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageButton
+                android:id="@+id/btn_down"
+                android:src="@drawable/ic_remote_btn_down"
+                app:layout_constraintBottom_toTopOf="@+id/btn_send_custom"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                style="@style/RemoteControlButton"
+                tools:ignore="ContentDescription" />
+
+            <ImageButton
+                android:id="@+id/btn_send_custom"
+                android:layout_width="@dimen/remote_custom_btn_size"
+                android:layout_height="@dimen/remote_custom_btn_size"
+                android:layout_marginBottom="0dp"
+                android:src="@drawable/ic_remote_btn_custom"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                style="@style/RemoteControlButton"
+                tools:ignore="ContentDescription" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/remote_custom_input_layout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/space_small"
+                android:hint="@string/remote_custom_command_hint"
+                app:layout_constraintBottom_toBottomOf="@+id/btn_send_custom"
+                app:layout_constraintEnd_toStartOf="@+id/btn_send_custom"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/btn_send_custom"
+                style="@style/TextInputLayoutStyle"
+                >
+
+                <AutoCompleteTextView
+                    android:id="@+id/remote_custom_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:imeOptions="actionDone"
+                    tools:ignore="Autofill,LabelFor"
+                    />
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+
+</androidx.appcompat.widget.LinearLayoutCompat>
+

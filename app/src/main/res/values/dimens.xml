@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="space_tiny">4dp</dimen>
+    <dimen name="space_mirror">8dp</dimen>
+    <dimen name="space_small">16dp</dimen>
+    <dimen name="space_medium">32dp</dimen>
+
+
+    <dimen name="text_tiny">4sp</dimen>
+    <dimen name="text_mirror">8sp</dimen>
+    <dimen name="text_small">16sp</dimen>
+    <dimen name="text_medium">24sp</dimen>
+
+    <dimen name="close_btn_size">32dp</dimen>
+    <dimen name="remote_button_size">52dp</dimen>
+    <dimen name="remote_command_size">150dp</dimen>
+    <dimen name="remote_custom_btn_size">40dp</dimen>
+</resources>

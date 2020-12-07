@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/pared_device_holder"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/pared_device_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textIsSelectable="true"
+        app:layout_constraintEnd_toStartOf="@+id/pared_device_guideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        style="@style/ParedDeviceNormalTitle"
+        tools:text="Device name" />
+
+    <TextView
+        android:id="@+id/pared_device_mac"
+        style="@style/ParedDeviceNormalText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textIsSelectable="true"
+        app:layout_constraintEnd_toStartOf="@+id/pared_device_guideline"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pared_device_name"
+        tools:text="Device MAC" />
+
+    <TextView
+        android:id="@+id/pared_device_info"
+        style="@style/ParedDeviceNormalText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textIsSelectable="true"
+        app:layout_constraintEnd_toStartOf="@+id/pared_device_guideline"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pared_device_mac"
+        tools:text="Device info" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginHorizontal="10dp"
+        android:background="@color/colorPrimaryDark"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pared_device_info" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/pared_device_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="57dp" />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/pared_device_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/pared_device_guideline"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

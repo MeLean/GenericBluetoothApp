@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Generic Bluetooth App</string>
+    <string name="on">Turn Bluetooth ON</string>
+    <string name="off">Turn Bluetooth OFF</string>
+    <string name="discoverable">Make me discoverable</string>
+    <string name="pared_devices">Refresh Devices</string>
+    <string name="close">close</string>
+    <string name="device_not_discovering">Not Discoverable</string>
+    <string name="device_discovering">Discoverable</string>
+    <string name="page_settings">Settings</string>
+    <string name="page_pared_devices">Pared Devices</string>
+    <string name="page_remote_control">Remote control</string>
+    <string name="no_bluetooth">Bluetooth is off.\nPlease, switch it on!</string>
+    <string name="selected_device_">Device %s was selected!</string>
+    <string name="remote_custom_command_hint">Enter custom command</string>
+    <string name="remote_down_command_hint">Enter down command</string>
+    <string name="remote_up_command_hint">Enter up command</string>
+    <string name="remote_left_command_hint">Enter left command</string>
+    <string name="remote_right_command_hint">Enter right command</string>
+    <string name="remote_sent_command_hint">Last command sent</string>
+    <string name="bluetooth_on">Bluetooth is on!</string>
+</resources>
