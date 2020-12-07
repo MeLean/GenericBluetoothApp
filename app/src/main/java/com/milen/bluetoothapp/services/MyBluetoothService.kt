@@ -10,6 +10,7 @@ import android.util.Log
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
+import java.nio.ByteBuffer
 import java.util.*
 
 
@@ -41,7 +42,7 @@ class MyBluetoothService(
 
         override fun run() {
             var numBytes: Int // bytes returned from read()
-
+            Log.d(TAG,  "ConnectedThread started")
             // Keep listening to the InputStream until an exception occurs.
             while (true) {
                 // Read from the InputStream.
@@ -52,14 +53,7 @@ class MyBluetoothService(
                     break
                 }
 
-                // Send the obtained bytes to the UI activity.
-                val readMsg = handler.obtainMessage(
-                    MESSAGE_READ,
-                    numBytes,
-                    -1,
-                    mmBuffer
-                )
-                readMsg.sendToTarget()
+                sendMsg(numBytes, mmBuffer)
             }
         }
 
@@ -95,6 +89,17 @@ class MyBluetoothService(
                 Log.e(TAG, "Could not close the connect socket", e)
             }
         }
+    }
+
+    private fun sendMsg(numBytes: Int, mmBuffer: ByteArray) {
+        // Send the obtained bytes to the UI activity.
+        val readMsg = handler.obtainMessage(
+            MESSAGE_READ,
+            numBytes,
+            -1,
+            mmBuffer
+        )
+        readMsg.sendToTarget()
     }
 
     private inner class AcceptThread : Thread() {
@@ -145,11 +150,16 @@ class MyBluetoothService(
             mmSocket?.use { socket ->
                 // Connect to the remote device through the socket. This call blocks
                 // until it succeeds or throws an exception.
-                socket.connect()
-
-                // The connection attempt succeeded. Perform work associated with
-                // the connection in a separate thread.
-                manageMyConnectedSocket(socket)
+                try {
+                    socket.connect()
+                    // The connection attempt succeeded. Perform work associated with
+                    // the connection in a separate thread.
+                    manageMyConnectedSocket(socket)
+                } catch (e : Throwable){
+                    Log.d(TAG,  "connection failed: ${e.localizedMessage}")
+                    val msg = e.localizedMessage ?: "error"
+                    sendMsg(msg.length, msg.toByteArray())
+                }
             }
         }
 
@@ -194,6 +204,7 @@ class MyBluetoothService(
     @Synchronized
     fun write(out: ByteArray?) {
         out?.let{
+            Log.d(TAG,  "write service: ${String(it)}")
             mConnectedThread?.write(it)
         }
     }

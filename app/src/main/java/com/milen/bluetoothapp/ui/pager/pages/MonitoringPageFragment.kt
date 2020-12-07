@@ -1,5 +1,6 @@
 package com.milen.bluetoothapp.ui.pager.pages
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.content.Intent
@@ -7,15 +8,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.google.android.material.snackbar.Snackbar
 import com.milen.bluetoothapp.Constants.BLUETOOTH_DISCOVERY_REQUEST_CODE
 import com.milen.bluetoothapp.Constants.BLUETOOTH_DISCOVERY_SECONDS_COUNT
 import com.milen.bluetoothapp.R
 import com.milen.bluetoothapp.base.ui.BasePageFragment
-import kotlinx.android.synthetic.main.fragment_settings_page.*
 import kotlinx.android.synthetic.main.fragment_settings_page.view.*
 
-class SettingsPageFragment : BasePageFragment() {
+class MonitoringPageFragment : BasePageFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -23,8 +22,18 @@ class SettingsPageFragment : BasePageFragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_settings_page, container, false)
+        subscribeToIncomingMessages(view)
         setOnClickListeners(view)
         return view
+    }
+
+
+    @SuppressLint("SetTextI18n")
+    private fun subscribeToIncomingMessages(view: View) {
+        viewModel.getIncomingMessage().observe(viewLifecycleOwner, {
+            val previousText = view.bluetooth_on.text
+            view.bluetooth_on.text = "$previousText\n$it"
+        })
     }
 
     private fun setOnClickListeners(view: View) {

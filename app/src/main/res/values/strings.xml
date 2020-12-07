@@ -7,7 +7,7 @@
     <string name="close">close</string>
     <string name="device_not_discovering">Not Discoverable</string>
     <string name="device_discovering">Discoverable</string>
-    <string name="page_settings">Settings</string>
+    <string name="page_monitoring">Monitoring</string>
     <string name="page_pared_devices">Pared Devices</string>
     <string name="page_remote_control">Remote control</string>
     <string name="no_bluetooth">Bluetooth is off.\nPlease, switch it on!</string>
