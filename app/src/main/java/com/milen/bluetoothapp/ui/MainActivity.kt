@@ -2,7 +2,11 @@ package com.milen.bluetoothapp.ui
 
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +22,24 @@ class MainActivity : AppCompatActivity() {
     private var denyCount = 0
     private val viewModel: MainViewModel by viewModels()
 
+    // Create a BroadcastReceiver for ACTION_FOUND.
+    private val receiver = object : BroadcastReceiver() {
+
+        override fun onReceive(context: Context, intent: Intent) {
+            when(intent.action) {
+                BluetoothDevice.ACTION_FOUND -> {
+                    // Discovery has found a device. Get the BluetoothDevice
+                    // object and its info from the Intent.
+                    val device: BluetoothDevice? =
+                        intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+                    val deviceName = device?.name
+                    val deviceHardwareAddress = device?.address // MAC address
+                }
+            }
+        }
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -27,6 +49,14 @@ class MainActivity : AppCompatActivity() {
         enableBluetoothIfNot()
 
         initViewPager(values())
+
+        registerReceiver(receiver, IntentFilter(BluetoothDevice.ACTION_FOUND))
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // unregister the ACTION_FOUND receiver.
+        unregisterReceiver(receiver)
     }
 
     override fun onSupportNavigateUp(): Boolean {

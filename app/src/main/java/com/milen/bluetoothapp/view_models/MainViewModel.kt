@@ -4,6 +4,7 @@ import android.app.Application
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.Context
+import android.os.Handler
 import androidx.annotation.StringRes
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -12,60 +13,83 @@ import com.milen.bluetoothapp.Constants
 import com.milen.bluetoothapp.R
 import com.milen.bluetoothapp.base.sharedPreferences.AndroidSharedPreferences
 import com.milen.bluetoothapp.base.sharedPreferences.DefaultAndroidSharedPreferences
+import com.milen.bluetoothapp.services.MyBluetoothService
 import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter
 import com.milen.bluetoothapp.utils.EMPTY_STRING
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
-    val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
-    private val sharedPreferences: AndroidSharedPreferences =
+    private val mBluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
+    private val mSharedPreferences: AndroidSharedPreferences =
         initAndroidSharedPreferences(application)
-    private val bluetoothAvailability = MutableLiveData<Boolean>()
-    private val customCommandsAutoCompleteSet = MutableLiveData<Set<String>>()
-    private val upValue = MutableLiveData<String>()
-    private val downValue = MutableLiveData<String>()
-    private val leftValue = MutableLiveData<String>()
-    private val rightValue = MutableLiveData<String>()
+    private val mBluetoothAvailability = MutableLiveData<Boolean>()
+    private val mCustomCommandsAutoCompleteSet = MutableLiveData<Set<String>>()
+    private val mUpValue = MutableLiveData<String>()
+    private val mDownValue = MutableLiveData<String>()
+    private val mLeftValue = MutableLiveData<String>()
+    private val mRightValue = MutableLiveData<String>()
 
+    private val mIncomingMsgHandler: Handler = Handler { msg ->
+        msg.obj?.let {
+            if (it is ByteArray) {
+                val msgStr = String(it)
+                setIncomingMessage(msgStr)
+            }
+        }
+        true
+    }
+
+    private val mBluetoothService = MyBluetoothService(mBluetoothAdapter, mIncomingMsgHandler)
+    private val mIncomingMessage = MutableLiveData<String>()
 
     init {
-        bluetoothAvailability.value = bluetoothAdapter?.isEnabled == true
-        customCommandsAutoCompleteSet.value =
-            sharedPreferences.readStringSetOrDefault(Constants.AUTO_COMPLETE_SET)
-        upValue.value =
-            sharedPreferences.readStringOrDefault(Constants.UP_VALUE_KEY, EMPTY_STRING)
-        downValue.value =
-            sharedPreferences.readStringOrDefault(Constants.DOWN_VALUE_KEY, EMPTY_STRING)
-        leftValue.value =
-            sharedPreferences.readStringOrDefault(Constants.LEFT_VALUE_KEY, EMPTY_STRING)
-        rightValue.value =
-            sharedPreferences.readStringOrDefault(Constants.RIGHT_VALUE_KEY, EMPTY_STRING)
+        mBluetoothService.startService()
+        mBluetoothAvailability.value = mBluetoothAdapter?.isEnabled == true
+        mCustomCommandsAutoCompleteSet.value =
+            mSharedPreferences.readStringSetOrDefault(Constants.AUTO_COMPLETE_SET)
+        mUpValue.value =
+            mSharedPreferences.readStringOrDefault(Constants.UP_VALUE_KEY, EMPTY_STRING)
+        mDownValue.value =
+            mSharedPreferences.readStringOrDefault(Constants.DOWN_VALUE_KEY, EMPTY_STRING)
+        mLeftValue.value =
+            mSharedPreferences.readStringOrDefault(Constants.LEFT_VALUE_KEY, EMPTY_STRING)
+        mRightValue.value =
+            mSharedPreferences.readStringOrDefault(Constants.RIGHT_VALUE_KEY, EMPTY_STRING)
     }
 
-    fun getBluetoothAvailability() : LiveData<Boolean> = bluetoothAvailability
+    fun getBluetoothAvailability() : LiveData<Boolean> = mBluetoothAvailability
     fun setBluetoothAvailability(isAvailable: Boolean) {
-        bluetoothAvailability.value = isAvailable
+        mBluetoothAvailability.value = isAvailable
     }
 
-    fun getCustomCommandsAutoCompleteSet(): LiveData<Set<String>> = customCommandsAutoCompleteSet
+    fun getCustomCommandsAutoCompleteSet(): LiveData<Set<String>> = mCustomCommandsAutoCompleteSet
     fun addCustomCommand(command: String) {
-        customCommandsAutoCompleteSet.value?.let {
+        mCustomCommandsAutoCompleteSet.value?.let {
             if (!it.contains(command)) {
                 val newSet = it.toMutableSet()
                 newSet.add(command)
-                sharedPreferences.storeStringSet(Constants.AUTO_COMPLETE_SET, newSet)
+                mSharedPreferences.storeStringSet(Constants.AUTO_COMPLETE_SET, newSet)
             }
         }
     }
 
-    fun getUpValue(): LiveData<String> = upValue
-    fun getDownValue(): LiveData<String> = downValue
-    fun getLeftValue(): LiveData<String> = leftValue
-    fun getRightValue(): LiveData<String> = rightValue
 
-    fun setUpValue(value: String) = sharedPreferences.storeString(Constants.UP_VALUE_KEY, value)
-    fun setDownValue(value: String) = sharedPreferences.storeString(Constants.DOWN_VALUE_KEY, value)
-    fun setLeftValue(value: String) = sharedPreferences.storeString(Constants.LEFT_VALUE_KEY, value)
-    fun setRightValue(value: String) = sharedPreferences.storeString(Constants.RIGHT_VALUE_KEY, value)
+    fun getIncomingMessage(): LiveData<String> = mIncomingMessage
+    fun setIncomingMessage(msg: String) {
+        mIncomingMessage.value = msg
+    }
+
+    fun getUpValue(): LiveData<String> = mUpValue
+    fun getDownValue(): LiveData<String> = mDownValue
+    fun getLeftValue(): LiveData<String> = mLeftValue
+    fun getRightValue(): LiveData<String> = mRightValue
+
+    fun setUpValue(value: String) = mSharedPreferences.storeString(Constants.UP_VALUE_KEY, value)
+    fun setDownValue(value: String) = mSharedPreferences.storeString(Constants.DOWN_VALUE_KEY, value)
+    fun setLeftValue(value: String) = mSharedPreferences.storeString(Constants.LEFT_VALUE_KEY, value)
+    fun setRightValue(value: String) = mSharedPreferences.storeString(
+        Constants.RIGHT_VALUE_KEY,
+        value
+    )
 
 
 
@@ -79,8 +103,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun getLastCommand(): LiveData<String> = lastCommand
 
     fun sentCommand(command: String) {
-        //TODO IMPLEMENT SENDING COMMAND
         if (command.isNotBlank()) {
+            //TODO SEND COMMAND
             lastCommand.value = command
         }
     }
