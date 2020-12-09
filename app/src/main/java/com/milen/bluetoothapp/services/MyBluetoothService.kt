@@ -23,7 +23,7 @@ const val MESSAGE_WRITE: Int = 1
 const val MESSAGE_TOAST: Int = 2
 
 const val NAME = "BluetoothServiceSecure"
-private val MY_UUID: UUID = UUID.fromString("0000110a-0000-1000-8000-00805f9b34fb")
+private val MY_UUID: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
 
 class MyBluetoothService(
     private val bluetoothAdapter: BluetoothAdapter?,
@@ -50,6 +50,8 @@ class MyBluetoothService(
                     mmInStream.read(mmBuffer)
                 } catch (e: IOException) {
                     Log.d(TAG, "Input stream was disconnected", e)
+                    //todo ERROR MSG
+                    sendErrorMsg(e)
                     break
                 }
 
@@ -64,11 +66,13 @@ class MyBluetoothService(
             } catch (e: IOException) {
                 Log.e(TAG, "Error occurred when sending data", e)
 
-                // Send a failure message back to the activity.
+                //TODO SET TO SEND ERROR MSG Send a failure message back to the activity.
                 val writeErrorMsg = handler.obtainMessage(MESSAGE_TOAST)
                 val bundle = Bundle().apply {
                     putString("toast", "Couldn't send data to the other device")
                 }
+                sendErrorMsg(e)
+
                 writeErrorMsg.data = bundle
                 handler.sendMessage(writeErrorMsg)
                 return
@@ -91,10 +95,16 @@ class MyBluetoothService(
         }
     }
 
+    private fun sendErrorMsg(e: Throwable) {
+        val msg = e.localizedMessage ?: "error"
+        sendMsg(msg.length, msg.toByteArray())
+    }
+
+
     private fun sendMsg(numBytes: Int, mmBuffer: ByteArray) {
         // Send the obtained bytes to the UI activity.
         val readMsg = handler.obtainMessage(
-            MESSAGE_READ,
+            MESSAGE_TOAST,
             numBytes,
             -1,
             mmBuffer
@@ -157,8 +167,7 @@ class MyBluetoothService(
                     manageMyConnectedSocket(socket)
                 } catch (e : Throwable){
                     Log.d(TAG,  "connection failed: ${e.localizedMessage}")
-                    val msg = e.localizedMessage ?: "error"
-                    sendMsg(msg.length, msg.toByteArray())
+                    sendErrorMsg(e)
                 }
             }
         }

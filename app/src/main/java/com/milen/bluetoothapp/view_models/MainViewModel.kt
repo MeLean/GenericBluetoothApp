@@ -5,10 +5,12 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.os.Handler
+import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.milen.GenericBluetoothApp
 import com.milen.bluetoothapp.Constants
 import com.milen.bluetoothapp.R
 import com.milen.bluetoothapp.base.sharedPreferences.AndroidSharedPreferences
@@ -32,7 +34,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         msg.obj?.let {
             if (it is ByteArray) {
                 val msgStr = String(it)
-                setIncomingMessage(msgStr)
+                mIncomingMessage.postValue(msgStr)
+                showIncomingMessage(msgStr)
             }
         }
         true
@@ -74,8 +77,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
 
     fun getIncomingMessage(): LiveData<String> = mIncomingMessage
-    private fun setIncomingMessage(msg: String) {
-            mIncomingMessage.value = msg
+
+    private fun showIncomingMessage(msg: String) {
+        Toast.makeText(
+            getApplication<GenericBluetoothApp>().applicationContext,
+            msg,
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     fun getUpValue(): LiveData<String> = mUpValue
