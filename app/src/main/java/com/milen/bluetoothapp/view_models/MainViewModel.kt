@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.os.Handler
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.lifecycle.AndroidViewModel
@@ -34,6 +35,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         msg.obj?.let {
             if (it is ByteArray) {
                 val msgStr = String(it)
+                Log.d("TEST_IT", "mIncomingMsgHandler $msgStr")
                 mIncomingMessage.postValue(msgStr)
                 showIncomingMessage(msgStr)
             }
