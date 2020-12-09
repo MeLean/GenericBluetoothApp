@@ -131,7 +131,7 @@ class MyBluetoothService(
                 }
                 socket?.also {
                     manageMyConnectedSocket(it)
-                    mmServerSocket?.close()
+                   //mmServerSocket?.close()
                     shouldLoop = false
                 }
             }
