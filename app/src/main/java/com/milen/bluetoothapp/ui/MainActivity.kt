@@ -14,7 +14,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.milen.bluetoothapp.Constants.BLUETOOTH_START_REQUEST_CODE
 import com.milen.bluetoothapp.R
 import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter
-import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter.Pages.*
+import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter.Page.*
 import com.milen.bluetoothapp.view_models.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -64,17 +64,21 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    private fun initViewPager(pages: Array<MainFragmentStateAdapter.Pages>) {
-        main_view_pager?.let {
+    private fun initViewPager(pages: Array<MainFragmentStateAdapter.Page>) {
+        main_view_pager?.let {viewPager ->
             val viewPagerAdapter = MainFragmentStateAdapter(this, pages)
-            it.adapter = viewPagerAdapter
+            viewPager.adapter = viewPagerAdapter
 
            TabLayoutMediator(main_bottom_tab_layout, main_view_pager) { tab, position ->
                 tab.setText(viewPagerAdapter.getStringResIdByPage(pages[position]))
             }.attach()
 
+            viewModel.getShouldScrollToPage().observe(this, { page ->
+                viewPager.setCurrentItem(page.ordinal, true)
+            })
+
             if(viewModel.bluetoothAdapter?.isEnabled == true){
-                it.setCurrentItem(PAGE_PARED_DEVICES.ordinal, true)
+                viewModel.setShouldScrollToPage(PAGE_PARED_DEVICES)
             }
         }
     }

@@ -5,20 +5,18 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.os.Handler
+import android.os.Message
 import android.util.Log
 import android.widget.Toast
-import androidx.annotation.StringRes
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.milen.GenericBluetoothApp
 import com.milen.bluetoothapp.Constants
-import com.milen.bluetoothapp.R
 import com.milen.bluetoothapp.data.sharedPreferences.ApplicationSharedPrefInterface
 import com.milen.bluetoothapp.data.sharedPreferences.DefaultApplicationSharedPreferences
-import com.milen.bluetoothapp.services.MESSAGE_FAIL_CONNECT
-import com.milen.bluetoothapp.services.MyBluetoothService
-import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter
+import com.milen.bluetoothapp.services.*
+import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter.*
 import com.milen.bluetoothapp.utils.EMPTY_STRING
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -33,17 +31,25 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val mRightValue = MutableLiveData<String>()
     private val selectedDevice = MutableLiveData<BluetoothDevice?>()
     private val lastCommand = MutableLiveData<String>()
+    private val mIncomingMessage = MutableLiveData<String>()
+    private val mShouldScroll = MutableLiveData<Page>()
 
     private val mIncomingMsgHandler: Handler = Handler { msg ->
         if(msg.what == MESSAGE_FAIL_CONNECT){
-            Log.d("TEST_IT", "mIncomingMsgHandler failed to connect!")
+            //Log.d("TEST_IT", "mIncomingMsgHandler failed to connect!")
             selectedDevice.postValue(null)
         }
 
+        if(msg.what == MESSAGE_CONNECT_SUCCESS){
+            //Log.d("TEST_IT", "mIncomingMsgHandler connected!")
+            mShouldScroll.value = Page.PAGE_REMOTE_CONTROL
+        }
+
+
         msg.obj?.let {
             if (it is ByteArray) {
-                val msgStr = String(it)
-                Log.d("TEST_IT", "mIncomingMsgHandler $msgStr")
+                val msgStr = createStringMsg(it, msg)
+                Log.d("TEST_IT", "mIncomingMsgHandler $msgStr what: ${msg.what}")
                 mIncomingMessage.postValue(msgStr)
                 showIncomingMessage(msgStr)
             }
@@ -51,8 +57,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         true
     }
 
-    private val mBluetoothService = MyBluetoothService.getInstance(bluetoothAdapter, mIncomingMsgHandler)
-    private val mIncomingMessage = MutableLiveData<String>()
+    private fun createStringMsg(arr: ByteArray, msg: Message): String {
+        val msgStr = arr.decodeToString()
+        return when(msg.what){
+            MESSAGE_READ -> "received: $msgStr"
+            MESSAGE_WRITE -> "sent: $msgStr"
+            else -> msgStr
+        }
+    }
+
+    private val mBluetoothService
+            = MyBluetoothService.getInstance(bluetoothAdapter, mIncomingMsgHandler)
 
     init {
         mBluetoothAvailability.value = bluetoothAdapter?.isEnabled == false
@@ -66,6 +81,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             mSharedPrefInterface.readStringOrDefault(Constants.LEFT_VALUE_KEY, EMPTY_STRING)
         mRightValue.value =
             mSharedPrefInterface.readStringOrDefault(Constants.RIGHT_VALUE_KEY, EMPTY_STRING)
+    }
+
+    fun getShouldScrollToPage() : LiveData<Page> = mShouldScroll
+    fun setShouldScrollToPage(page:Page){
+        mShouldScroll.value = page
     }
 
     fun getBluetoothAvailability() : LiveData<Boolean> = mBluetoothAvailability
@@ -141,5 +161,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             msg,
             Toast.LENGTH_SHORT
         ).show()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        //Log.d("TEST_IT", "MainViewModel onCleared")
+        setBluetoothDevice(null)
+        mBluetoothService.stopService()
     }
 }

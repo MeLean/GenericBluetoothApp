@@ -9,13 +9,13 @@ import com.milen.bluetoothapp.ui.pager.pages.MonitoringPageFragment
 import com.milen.bluetoothapp.ui.pager.pages.ParedDevicesPageFragment
 import com.milen.bluetoothapp.ui.pager.pages.RemoteControlPageFragment
 
-class MainFragmentStateAdapter(activity: AppCompatActivity,private val pages : Array<Pages>) : FragmentStateAdapter(activity) {
+class MainFragmentStateAdapter(activity: AppCompatActivity,private val pages : Array<Page>) : FragmentStateAdapter(activity) {
 
     override fun createFragment(position: Int): Fragment {
         return when (pages[position]) {
-            Pages.PAGE_MONITORING -> MonitoringPageFragment()
-            Pages.PAGE_PARED_DEVICES -> ParedDevicesPageFragment()
-            Pages.PAGE_REMOTE_CONTROL -> RemoteControlPageFragment()
+            Page.PAGE_MONITORING -> MonitoringPageFragment()
+            Page.PAGE_PARED_DEVICES -> ParedDevicesPageFragment()
+            Page.PAGE_REMOTE_CONTROL -> RemoteControlPageFragment()
         }
     }
 
@@ -24,15 +24,15 @@ class MainFragmentStateAdapter(activity: AppCompatActivity,private val pages : A
     }
 
     @StringRes
-    fun getStringResIdByPage(page: Pages): Int {
+    fun getStringResIdByPage(page: Page): Int {
         return when (page) {
-            Pages.PAGE_MONITORING -> R.string.page_monitoring
-            Pages.PAGE_PARED_DEVICES -> R.string.page_pared_devices
-            Pages.PAGE_REMOTE_CONTROL -> R.string.page_remote_control
+            Page.PAGE_MONITORING -> R.string.page_monitoring
+            Page.PAGE_PARED_DEVICES -> R.string.page_pared_devices
+            Page.PAGE_REMOTE_CONTROL -> R.string.page_remote_control
         }
     }
 
-    enum class Pages {
+    enum class Page {
         PAGE_MONITORING,
         PAGE_PARED_DEVICES,
         PAGE_REMOTE_CONTROL

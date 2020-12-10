@@ -9,6 +9,7 @@ import android.util.Log
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
+import java.nio.charset.Charset
 import java.util.*
 
 
@@ -16,10 +17,11 @@ private const val TAG = "TEST_IT"
 
 // Defines several constants used when transmitting messages between the
 // service and the UI.
-//const val MESSAGE_READ: Int = 0
+const val MESSAGE_READ: Int = 0
 const val MESSAGE_WRITE: Int = 1
 const val MESSAGE_ERROR: Int = 2
 const val MESSAGE_FAIL_CONNECT: Int = 3
+const val MESSAGE_CONNECT_SUCCESS: Int = 4
 
 const val NAME = "BluetoothServiceSecure"
 private val MY_UUID: UUID = UUID.fromString("00001101a-0000-1000-8000-00805f9b34fb")
@@ -71,7 +73,8 @@ class MyBluetoothService(
 
                 socket?.also {
                     manageMyConnectedSocket(it)
-                    Log.d(TAG, "Socket's accepted for: ${it.remoteDevice?.name} !")
+                    mmServerSocket?.close()
+                    Log.d(TAG, "Socket's accepted for: ${it.remoteDevice?.name}!")
                     shouldLoop = false
                 }
             }
@@ -81,7 +84,7 @@ class MyBluetoothService(
         fun cancel() {
             try {
                 mmServerSocket?.close()
-                Log.e(TAG, "mAcceptThread mmServerSocket closed")
+                Log.e(TAG, "mAcceptThread closed")
             } catch (e: IOException) {
                 Log.e(TAG, "Could not close the connect socket", e)
             }
@@ -109,7 +112,7 @@ class MyBluetoothService(
                     manageMyConnectedSocket(socket)
                 } catch (e : Throwable) {
                     Log.e(TAG, "connection failed: ${e.localizedMessage}", e)
-                    sendErrorMsg(e, MESSAGE_FAIL_CONNECT)
+                    sentEvent(MESSAGE_FAIL_CONNECT)
                 }
             }
         }
@@ -129,16 +132,19 @@ class MyBluetoothService(
 
         private val mmInStream: InputStream = mmSocket.inputStream
         private val mmOutStream: OutputStream = mmSocket.outputStream
-        private val mmBuffer: ByteArray = ByteArray(1024) // mmBuffer store for the stream
+        private lateinit var mmBuffer: ByteArray// mmBuffer store for the stream
 
         override fun run() {
             var numBytes: Int // bytes returned from read()
+            sentEvent(MESSAGE_CONNECT_SUCCESS)
             Log.d(TAG,  "ConnectedThread started ${mmSocket.remoteDevice.name}")
+
             // Keep listening to the InputStream until an exception occurs.
             while (true) {
                 // Read from the InputStream.
                 numBytes = try {
                     Log.d(TAG, "start reading input isAvailable: ${mmInStream.available()}!")
+                    mmBuffer = ByteArray(1024)
                     mmInStream.read(mmBuffer)
                 } catch (e: IOException) {
                     Log.d(TAG, "Input stream was disconnected", e)
@@ -146,8 +152,8 @@ class MyBluetoothService(
                     break
                 }
 
-                Log.d(TAG, "Message to send: ${String(mmBuffer)}")
-                sendMsg(numBytes, mmBuffer, MESSAGE_WRITE)
+                Log.d(TAG, "Message to send: ${String(mmBuffer, Charset.defaultCharset())}")
+                sendMsg(numBytes, mmBuffer, MESSAGE_READ)
             }
         }
 
@@ -155,9 +161,9 @@ class MyBluetoothService(
         fun write(bytes: ByteArray) {
             try {
                 mmOutStream.write(bytes)
-                Log.d(TAG, "mmOutStream sending data done!")
+                Log.d(TAG, "mmOutStream sending data done! data: ${String(bytes, Charset.defaultCharset())}")
             } catch (e: IOException) {
-                Log.e(TAG, "Error occurred when sending data: ${String(bytes)}", e)
+                Log.e(TAG, "Error occurred when sending data: ${String(bytes, Charset.defaultCharset())}", e)
                 sendErrorMsg(e)
                 return
             }
@@ -167,6 +173,7 @@ class MyBluetoothService(
                 MESSAGE_WRITE, -1, -1, bytes
             )
             writtenMsg.sendToTarget()
+            mmOutStream.flush()
         }
 
         // Call this method from the main activity to shut down the connection.
@@ -228,7 +235,7 @@ class MyBluetoothService(
     @Synchronized
     fun write(out: ByteArray?) {
         out?.let{
-            Log.d(TAG,  "write service: ${String(it)}")
+            Log.d(TAG,  "write service: ${String(it, Charset.defaultCharset())}")
             mConnectedThread?.write(it)
         }
     }
@@ -272,4 +279,10 @@ class MyBluetoothService(
         readMsg.sendToTarget()
     }
 
+    private fun sentEvent(event: Int) {
+        val eventMsg = handler.obtainMessage(
+            event
+        )
+        eventMsg.sendToTarget()
+    }
 }
