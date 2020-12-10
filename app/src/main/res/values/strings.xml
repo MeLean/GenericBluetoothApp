@@ -20,5 +20,6 @@
     <string name="remote_right_command_hint">Enter right command</string>
     <string name="remote_sent_command_hint">Last command sent</string>
     <string name="bluetooth_on">Bluetooth is on!</string>
+    <string name="no_device_selected">There is no device selected</string>
 
 </resources>

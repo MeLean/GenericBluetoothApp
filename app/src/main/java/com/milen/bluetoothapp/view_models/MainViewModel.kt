@@ -29,15 +29,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val mDownValue = MutableLiveData<String>()
     private val mLeftValue = MutableLiveData<String>()
     private val mRightValue = MutableLiveData<String>()
-    private val selectedDevice = MutableLiveData<BluetoothDevice?>()
-    private val lastCommand = MutableLiveData<String>()
+    private val mSelectedDevice = MutableLiveData<BluetoothDevice?>()
+    private val mLastCommand = MutableLiveData<String>()
     private val mIncomingMessage = MutableLiveData<String>()
     private val mShouldScroll = MutableLiveData<Page>()
 
     private val mIncomingMsgHandler: Handler = Handler { msg ->
         if(msg.what == MESSAGE_FAIL_CONNECT){
             //Log.d("TEST_IT", "mIncomingMsgHandler failed to connect!")
-            selectedDevice.postValue(null)
+            mSelectedDevice.postValue(null)
         }
 
         if(msg.what == MESSAGE_CONNECT_SUCCESS){
@@ -125,7 +125,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     )
 
 
-    fun getBluetoothDevice(): LiveData<BluetoothDevice?> = selectedDevice
+    fun getBluetoothDevice(): LiveData<BluetoothDevice?> = mSelectedDevice
     fun setBluetoothDevice(device: BluetoothDevice?) {
         if(device != null) {
             mBluetoothService.connectToDevice(device)
@@ -133,16 +133,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             mBluetoothService.disconnectAllDevices()
         }
 
-        selectedDevice.value = device
+        mSelectedDevice.value = device
     }
 
 
-    fun getLastCommand(): LiveData<String> = lastCommand
+    fun getLastCommand(): LiveData<String> = mLastCommand
 
     fun sentCommand(command: String) {
         if (command.isNotBlank()) {
             mBluetoothService.write(command.toByteArray())
-            lastCommand.value = command
+            mLastCommand.value = command
         }
     }
 
