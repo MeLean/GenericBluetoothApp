@@ -48,6 +48,10 @@ class RemoteControlPageFragment : BasePageFragment(), View.OnClickListener {
                     android.R.layout.simple_list_item_1, strSet.toTypedArray()
                 )
                 view.remote_custom_edit_text?.setAdapter(adapter)
+                if(strSet.isNotEmpty()){
+                    view.remote_custom_edit_text.setText(strSet.last())
+                }
+
             }
         )
 

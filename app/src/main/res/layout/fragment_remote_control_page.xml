@@ -106,7 +106,6 @@
                 style="@style/RemoteControlButton"
                 tools:ignore="ContentDescription" />
 
-
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/remote_left_text_input_layout"
                 android:layout_width="@dimen/remote_command_size"
