@@ -4,13 +4,11 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothServerSocket
 import android.bluetooth.BluetoothSocket
-import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
-import java.nio.ByteBuffer
 import java.util.*
 
 
@@ -18,9 +16,10 @@ private const val TAG = "TEST_IT"
 
 // Defines several constants used when transmitting messages between the
 // service and the UI.
-const val MESSAGE_READ: Int = 0
+//const val MESSAGE_READ: Int = 0
 const val MESSAGE_WRITE: Int = 1
-const val MESSAGE_TOAST: Int = 2
+const val MESSAGE_ERROR: Int = 2
+const val MESSAGE_FAIL_CONNECT: Int = 3
 
 const val NAME = "BluetoothServiceSecure"
 private val MY_UUID: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
@@ -30,6 +29,21 @@ class MyBluetoothService(
     // handler that gets info from Bluetooth service
     private val handler: Handler
 ) {
+    companion object {
+
+        @Volatile
+        private var INSTANCE: MyBluetoothService? = null
+
+        fun getInstance(
+            bluetoothAdapter: BluetoothAdapter?,
+            handler: Handler
+        ): MyBluetoothService = INSTANCE ?: synchronized(this) {
+            MyBluetoothService(bluetoothAdapter, handler).also {
+                INSTANCE = it
+            }
+        }
+    }
+
     private var mConnectThread: ConnectThread? = null
     private var mAcceptThread: AcceptThread? = null
     private var mConnectedThread: ConnectedThread? = null
@@ -48,14 +62,14 @@ class MyBluetoothService(
                 // Read from the InputStream.
                 numBytes = try {
                     mmInStream.read(mmBuffer)
+                    Log.d(TAG, "Message received: ${String(mmBuffer)}")
                 } catch (e: IOException) {
                     Log.d(TAG, "Input stream was disconnected", e)
-                    //todo ERROR MSG
                     sendErrorMsg(e)
                     break
                 }
 
-                sendMsg(numBytes, mmBuffer)
+                sendMsg(numBytes, mmBuffer, MESSAGE_WRITE)
             }
         }
 
@@ -63,18 +77,10 @@ class MyBluetoothService(
         fun write(bytes: ByteArray) {
             try {
                 mmOutStream.write(bytes)
+                Log.d(TAG, "mmOutStream sending data done!")
             } catch (e: IOException) {
                 Log.e(TAG, "Error occurred when sending data", e)
-
-                //TODO SET TO SEND ERROR MSG Send a failure message back to the activity.
-                val writeErrorMsg = handler.obtainMessage(MESSAGE_TOAST)
-                val bundle = Bundle().apply {
-                    putString("toast", "Couldn't send data to the other device")
-                }
                 sendErrorMsg(e)
-
-                writeErrorMsg.data = bundle
-                handler.sendMessage(writeErrorMsg)
                 return
             }
 
@@ -95,25 +101,7 @@ class MyBluetoothService(
         }
     }
 
-    private fun sendErrorMsg(e: Throwable) {
-        val msg = e.localizedMessage ?: "error"
-        sendMsg(msg.length, msg.toByteArray())
-    }
-
-
-    private fun sendMsg(numBytes: Int, mmBuffer: ByteArray) {
-        // Send the obtained bytes to the UI activity.
-        val readMsg = handler.obtainMessage(
-            MESSAGE_TOAST,
-            numBytes,
-            -1,
-            mmBuffer
-        )
-        readMsg.sendToTarget()
-    }
-
     private inner class AcceptThread : Thread() {
-
         private val mmServerSocket: BluetoothServerSocket? by lazy(LazyThreadSafetyMode.NONE) {
             bluetoothAdapter?.listenUsingInsecureRfcommWithServiceRecord(NAME, MY_UUID)
         }
@@ -123,9 +111,13 @@ class MyBluetoothService(
             var shouldLoop = true
             while (shouldLoop) {
                 val socket: BluetoothSocket? = try {
-                    mmServerSocket?.accept()
+                    mmServerSocket?.let {
+                        Log.d(TAG, "Socket's accept() started!")
+                        it.accept()
+                    }
                 } catch (e: IOException) {
                     Log.e(TAG, "Socket's accept() method failed", e)
+                    MESSAGE_ERROR
                     shouldLoop = false
                     null
                 }
@@ -141,6 +133,7 @@ class MyBluetoothService(
         fun cancel() {
             try {
                 mmServerSocket?.close()
+                Log.e(TAG, "mmServerSocket closed")
             } catch (e: IOException) {
                 Log.e(TAG, "Could not close the connect socket", e)
             }
@@ -154,6 +147,7 @@ class MyBluetoothService(
         }
 
         override fun run() {
+            Log.d(TAG, "ConnectThread started")
             // Cancel discovery because it otherwise slows down the connection.
             bluetoothAdapter?.cancelDiscovery()
 
@@ -165,9 +159,9 @@ class MyBluetoothService(
                     // The connection attempt succeeded. Perform work associated with
                     // the connection in a separate thread.
                     manageMyConnectedSocket(socket)
-                } catch (e : Throwable){
-                    Log.d(TAG,  "connection failed: ${e.localizedMessage}")
-                    sendErrorMsg(e)
+                } catch (e : Throwable) {
+                    Log.e(TAG, "connection failed: ${e.localizedMessage}", e)
+                    sendErrorMsg(e, MESSAGE_FAIL_CONNECT)
                 }
             }
         }
@@ -176,6 +170,7 @@ class MyBluetoothService(
         fun cancel() {
             try {
                 mmSocket?.close()
+                Log.d(TAG, "mmSocket closed")
             } catch (e: IOException) {
                 Log.e(TAG, "Could not close the client socket", e)
             }
@@ -183,25 +178,39 @@ class MyBluetoothService(
     }
 
     private fun manageMyConnectedSocket(socket: BluetoothSocket) {
+        Log.d(
+            TAG,
+            "connection started device name: ${socket.remoteDevice.name} isConnected: ${socket.isConnected}"
+        )
         mConnectedThread = ConnectedThread(socket)
         mConnectedThread?.start()
     }
 
     @Synchronized
     fun startService() {
-        Log.d(TAG, "startService")
+        Log.d(TAG, "startService invoked")
+        if (mAcceptThread?.isAlive == true) {
+            return
+        }
+
+        Log.d(TAG, "mAcceptThread started")
+        mAcceptThread = AcceptThread()
+        mAcceptThread?.start()
+    }
+
+    @Synchronized
+    fun stopService() {
+        if (mAcceptThread != null) {
+            mAcceptThread?.cancel()
+            mAcceptThread = null
+        }
 
         cancelAllConnectedDevices()
-
-        if (mAcceptThread == null) {
-            mAcceptThread = AcceptThread()
-            mAcceptThread?.start()
-        }
     }
 
     @Synchronized
     fun connectToDevice(device: BluetoothDevice) {
-        Log.d(TAG, "connect to: $device")
+        Log.d(TAG, "connectToDevice: $device")
 
         cancelAllConnectedDevices()
 
@@ -220,6 +229,7 @@ class MyBluetoothService(
 
     @Synchronized
     fun cancelAllConnectedDevices() {
+        Log.d(TAG, "cancelAllConnectedDevices")
         mConnectThread?.let {
             it.cancel()
             mConnectThread = null
@@ -230,4 +240,21 @@ class MyBluetoothService(
             mConnectedThread = null
         }
     }
+
+    private fun sendErrorMsg(e: Throwable, what: Int = MESSAGE_ERROR) {
+        val msg = e.localizedMessage ?: "error"
+        sendMsg(msg.length, msg.toByteArray(), what)
+    }
+
+    private fun sendMsg(numBytes: Int, mmBuffer: ByteArray, what: Int) {
+        // Send the obtained bytes to the UI activity.
+        val readMsg = handler.obtainMessage(
+            what,
+            numBytes,
+            -1,
+            mmBuffer
+        )
+        readMsg.sendToTarget()
+    }
+
 }

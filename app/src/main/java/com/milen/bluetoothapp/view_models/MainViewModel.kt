@@ -16,6 +16,7 @@ import com.milen.bluetoothapp.Constants
 import com.milen.bluetoothapp.R
 import com.milen.bluetoothapp.base.sharedPreferences.AndroidSharedPreferences
 import com.milen.bluetoothapp.base.sharedPreferences.DefaultAndroidSharedPreferences
+import com.milen.bluetoothapp.services.MESSAGE_FAIL_CONNECT
 import com.milen.bluetoothapp.services.MyBluetoothService
 import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter
 import com.milen.bluetoothapp.utils.EMPTY_STRING
@@ -32,6 +33,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val mRightValue = MutableLiveData<String>()
 
     private val mIncomingMsgHandler: Handler = Handler { msg ->
+        if(msg.what == MESSAGE_FAIL_CONNECT){
+            Log.d("TEST_IT", "mIncomingMsgHandler failed to connect!")
+            selectedDevice.postValue(null)
+        }
+
         msg.obj?.let {
             if (it is ByteArray) {
                 val msgStr = String(it)
@@ -43,7 +49,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         true
     }
 
-    private val mBluetoothService = MyBluetoothService(bluetoothAdapter, mIncomingMsgHandler)
+    private val mBluetoothService = MyBluetoothService.getInstance(bluetoothAdapter, mIncomingMsgHandler)
     private val mIncomingMessage = MutableLiveData<String>()
 
     init {

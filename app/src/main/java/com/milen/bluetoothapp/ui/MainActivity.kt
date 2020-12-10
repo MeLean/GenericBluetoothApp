@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
     private var denyCount = 0
     private val viewModel: MainViewModel by viewModels()
 
-    // Create a BroadcastReceiver for ACTION_FOUND.
+    //TODO Create a BroadcastReceiver for ACTION_FOUND.
     private val receiver = object : BroadcastReceiver() {
 
         override fun onReceive(context: Context, intent: Intent) {
