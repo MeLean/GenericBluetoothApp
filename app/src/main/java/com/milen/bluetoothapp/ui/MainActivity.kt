@@ -66,13 +66,16 @@ class MainActivity : AppCompatActivity() {
 
     private fun initViewPager(pages: Array<MainFragmentStateAdapter.Pages>) {
         main_view_pager?.let {
-            it.adapter = MainFragmentStateAdapter(this, pages)
+            val viewPagerAdapter = MainFragmentStateAdapter(this, pages)
+            it.adapter = viewPagerAdapter
 
            TabLayoutMediator(main_bottom_tab_layout, main_view_pager) { tab, position ->
-                tab.setText(viewModel.getStringResIdByPage(pages[position]))
+                tab.setText(viewPagerAdapter.getStringResIdByPage(pages[position]))
             }.attach()
 
-            it.currentItem =1
+            if(viewModel.bluetoothAdapter?.isEnabled == true){
+                it.setCurrentItem(PAGE_PARED_DEVICES.ordinal, true)
+            }
         }
     }
 

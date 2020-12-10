@@ -1,4 +1,4 @@
-package com.milen.bluetoothapp.base.sharedPreferences
+package com.milen.bluetoothapp.data.sharedPreferences
 
 import android.bluetooth.BluetoothDevice
 import android.content.SharedPreferences
@@ -8,7 +8,7 @@ import com.google.gson.reflect.TypeToken
 import com.milen.bluetoothapp.utils.EMPTY_STRING
 import java.lang.reflect.Type
 
-interface AndroidSharedPreferences {
+interface ApplicationSharedPrefInterface {
 
     fun hasCachedKey(key: String): Boolean
 
@@ -35,7 +35,7 @@ interface AndroidSharedPreferences {
 //    fun readStoredRemoteControlsNavNamesOfDefault(key: String): RemoteControlNavValues?
 }
 
-class DefaultAndroidSharedPreferences(private val sharedPreferences: SharedPreferences): AndroidSharedPreferences {
+class DefaultApplicationSharedPreferences(private val sharedPreferences: SharedPreferences): ApplicationSharedPrefInterface {
 
     override fun hasCachedKey(key: String): Boolean = sharedPreferences.contains(key)
 
@@ -68,7 +68,7 @@ class DefaultAndroidSharedPreferences(private val sharedPreferences: SharedPrefe
         return if (cachedString == null) null else gson.fromJson<BluetoothDevice>(cachedString, type)
     }
 //
-//    override fun readStoredRemoteControlsNavNamesOfDefault(key: String): RemoteControlNavValues {
+//    override fun readStoredRemoteControlsNavNamesOrDefault(key: String): RemoteControlNavValues {
 //        val gson = Gson()
 //        val cachedString = readStringOrDefault(key, null)
 //        val type: Type = object : TypeToken<RemoteControlNavValues>() {}.type

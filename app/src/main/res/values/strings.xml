@@ -2,7 +2,8 @@
     <string name="app_name">Generic Bluetooth App</string>
     <string name="on">Turn Bluetooth ON</string>
     <string name="off">Turn Bluetooth OFF</string>
-    <string name="discoverable">Make me discoverable</string>
+    <string name="start_service">Make Visible</string>
+    <string name="stop_service">Stop service</string>
     <string name="pared_devices">Refresh Devices</string>
     <string name="close">close</string>
     <string name="device_not_discovering">Not Discoverable</string>
@@ -19,4 +20,5 @@
     <string name="remote_right_command_hint">Enter right command</string>
     <string name="remote_sent_command_hint">Last command sent</string>
     <string name="bluetooth_on">Bluetooth is on!</string>
+
 </resources>

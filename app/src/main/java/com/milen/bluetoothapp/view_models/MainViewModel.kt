@@ -14,8 +14,8 @@ import androidx.lifecycle.MutableLiveData
 import com.milen.GenericBluetoothApp
 import com.milen.bluetoothapp.Constants
 import com.milen.bluetoothapp.R
-import com.milen.bluetoothapp.base.sharedPreferences.AndroidSharedPreferences
-import com.milen.bluetoothapp.base.sharedPreferences.DefaultAndroidSharedPreferences
+import com.milen.bluetoothapp.data.sharedPreferences.ApplicationSharedPrefInterface
+import com.milen.bluetoothapp.data.sharedPreferences.DefaultApplicationSharedPreferences
 import com.milen.bluetoothapp.services.MESSAGE_FAIL_CONNECT
 import com.milen.bluetoothapp.services.MyBluetoothService
 import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter
@@ -23,7 +23,7 @@ import com.milen.bluetoothapp.utils.EMPTY_STRING
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
-    private val mSharedPreferences: AndroidSharedPreferences =
+    private val mSharedPrefInterface: ApplicationSharedPrefInterface =
         initAndroidSharedPreferences(application)
     private val mBluetoothAvailability = MutableLiveData<Boolean>()
     private val mCustomCommandsAutoCompleteSet = MutableLiveData<Set<String>>()
@@ -31,6 +31,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val mDownValue = MutableLiveData<String>()
     private val mLeftValue = MutableLiveData<String>()
     private val mRightValue = MutableLiveData<String>()
+    private val selectedDevice = MutableLiveData<BluetoothDevice?>()
+    private val lastCommand = MutableLiveData<String>()
 
     private val mIncomingMsgHandler: Handler = Handler { msg ->
         if(msg.what == MESSAGE_FAIL_CONNECT){
@@ -53,23 +55,27 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val mIncomingMessage = MutableLiveData<String>()
 
     init {
-        mBluetoothService.startService()
-        mBluetoothAvailability.value = bluetoothAdapter?.isEnabled == true
+        mBluetoothAvailability.value = bluetoothAdapter?.isEnabled == false
         mCustomCommandsAutoCompleteSet.value =
-            mSharedPreferences.readStringSetOrDefault(Constants.AUTO_COMPLETE_SET)
+            mSharedPrefInterface.readStringSetOrDefault(Constants.AUTO_COMPLETE_SET)
         mUpValue.value =
-            mSharedPreferences.readStringOrDefault(Constants.UP_VALUE_KEY, EMPTY_STRING)
+            mSharedPrefInterface.readStringOrDefault(Constants.UP_VALUE_KEY, EMPTY_STRING)
         mDownValue.value =
-            mSharedPreferences.readStringOrDefault(Constants.DOWN_VALUE_KEY, EMPTY_STRING)
+            mSharedPrefInterface.readStringOrDefault(Constants.DOWN_VALUE_KEY, EMPTY_STRING)
         mLeftValue.value =
-            mSharedPreferences.readStringOrDefault(Constants.LEFT_VALUE_KEY, EMPTY_STRING)
+            mSharedPrefInterface.readStringOrDefault(Constants.LEFT_VALUE_KEY, EMPTY_STRING)
         mRightValue.value =
-            mSharedPreferences.readStringOrDefault(Constants.RIGHT_VALUE_KEY, EMPTY_STRING)
+            mSharedPrefInterface.readStringOrDefault(Constants.RIGHT_VALUE_KEY, EMPTY_STRING)
     }
 
     fun getBluetoothAvailability() : LiveData<Boolean> = mBluetoothAvailability
     fun setBluetoothAvailability(isAvailable: Boolean) {
         mBluetoothAvailability.value = isAvailable
+
+        when(isAvailable){
+            true -> mBluetoothService.startService()
+            else -> mBluetoothService.stopService()
+        }
     }
 
     fun getCustomCommandsAutoCompleteSet(): LiveData<Set<String>> = mCustomCommandsAutoCompleteSet
@@ -78,49 +84,39 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             if (!it.contains(command)) {
                 val newSet = it.toMutableSet()
                 newSet.add(command)
-                mSharedPreferences.storeStringSet(Constants.AUTO_COMPLETE_SET, newSet)
+                mSharedPrefInterface.storeStringSet(Constants.AUTO_COMPLETE_SET, newSet)
             }
         }
     }
 
-
     fun getIncomingMessage(): LiveData<String> = mIncomingMessage
-
-    private fun showIncomingMessage(msg: String) {
-        Toast.makeText(
-            getApplication<GenericBluetoothApp>().applicationContext,
-            msg,
-            Toast.LENGTH_SHORT
-        ).show()
-    }
 
     fun getUpValue(): LiveData<String> = mUpValue
     fun getDownValue(): LiveData<String> = mDownValue
     fun getLeftValue(): LiveData<String> = mLeftValue
     fun getRightValue(): LiveData<String> = mRightValue
 
-    fun setUpValue(value: String) = mSharedPreferences.storeString(Constants.UP_VALUE_KEY, value)
-    fun setDownValue(value: String) = mSharedPreferences.storeString(Constants.DOWN_VALUE_KEY, value)
-    fun setLeftValue(value: String) = mSharedPreferences.storeString(Constants.LEFT_VALUE_KEY, value)
-    fun setRightValue(value: String) = mSharedPreferences.storeString(
+    fun setUpValue(value: String) = mSharedPrefInterface.storeString(Constants.UP_VALUE_KEY, value)
+    fun setDownValue(value: String) = mSharedPrefInterface.storeString(Constants.DOWN_VALUE_KEY, value)
+    fun setLeftValue(value: String) = mSharedPrefInterface.storeString(Constants.LEFT_VALUE_KEY, value)
+    fun setRightValue(value: String) = mSharedPrefInterface.storeString(
         Constants.RIGHT_VALUE_KEY,
         value
     )
 
 
-
-    private var selectedDevice = MutableLiveData<BluetoothDevice?>()
     fun getBluetoothDevice(): LiveData<BluetoothDevice?> = selectedDevice
     fun setBluetoothDevice(device: BluetoothDevice?) {
-        selectedDevice.value = device
-
-        //try to connect to selected device
-        device?.let {
-            mBluetoothService.connectToDevice(it)
+        if(device != null) {
+            mBluetoothService.connectToDevice(device)
+        }else{
+            mBluetoothService.disconnectAllDevices()
         }
+
+        selectedDevice.value = device
     }
 
-    private var lastCommand = MutableLiveData<String>()
+
     fun getLastCommand(): LiveData<String> = lastCommand
 
     fun sentCommand(command: String) {
@@ -130,17 +126,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    @StringRes
-    fun getStringResIdByPage(page: MainFragmentStateAdapter.Pages): Int {
-        return when (page) {
-            MainFragmentStateAdapter.Pages.PAGE_MONITORING -> R.string.page_monitoring
-            MainFragmentStateAdapter.Pages.PAGE_PARED_DEVICES -> R.string.page_pared_devices
-            MainFragmentStateAdapter.Pages.PAGE_REMOTE_CONTROL -> R.string.page_remote_control
-        }
-    }
-
-    private fun initAndroidSharedPreferences(application: Application): AndroidSharedPreferences {
-        return DefaultAndroidSharedPreferences(
+    private fun initAndroidSharedPreferences(application: Application): ApplicationSharedPrefInterface {
+        return DefaultApplicationSharedPreferences(
             application.getSharedPreferences(
                 Constants.SHARED_PREF_NAME,
                 Context.MODE_PRIVATE
@@ -148,5 +135,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         )
     }
 
-
+    private fun showIncomingMessage(msg: String) {
+        Toast.makeText(
+            getApplication<GenericBluetoothApp>().applicationContext,
+            msg,
+            Toast.LENGTH_SHORT
+        ).show()
+    }
 }

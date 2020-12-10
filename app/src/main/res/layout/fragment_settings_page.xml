@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_on"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -17,7 +17,7 @@
         style="@style/AppButton"
         />
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_off"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -31,16 +31,18 @@
         style="@style/AppButton"
         />
 
-    <Button
-        android:id="@+id/btn_discovery"
-        style="@style/AppButton"
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_start_service"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:text="@string/discoverable"
+        android:text="@string/start_service"
         app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_on" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_on"
+        style="@style/AppButton"
+        />
+
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
@@ -61,7 +63,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_discovery" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_start_service" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_stop_service"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/stop_service"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/btn_off"
+        style="@style/AppButton"
+        />
 
     <include
         layout="@layout/item_bluetooth_not_enabled"
@@ -70,8 +85,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_on"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/btn_on" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
