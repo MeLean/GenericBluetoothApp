@@ -9,7 +9,7 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import androidx.core.widget.addTextChangedListener
 import com.milen.bluetoothapp.R
-import com.milen.bluetoothapp.base.ui.pages.BasePageFragment
+import com.milen.bluetoothapp.base.ui.pager.pages.BasePageFragment
 import com.milen.bluetoothapp.utils.EMPTY_STRING
 import com.milen.bluetoothapp.utils.beGone
 import com.milen.bluetoothapp.utils.beVisible

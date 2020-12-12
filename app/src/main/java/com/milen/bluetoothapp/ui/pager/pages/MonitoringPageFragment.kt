@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.milen.bluetoothapp.R
-import com.milen.bluetoothapp.base.ui.pages.BasePageFragment
+import com.milen.bluetoothapp.base.ui.pager.pages.BasePageFragment
 import kotlinx.android.synthetic.main.fragment_settings_page.view.*
 
 class MonitoringPageFragment : BasePageFragment() {

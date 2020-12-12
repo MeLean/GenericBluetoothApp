@@ -21,7 +21,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.milen.bluetoothapp.Constants.PERMISSION_REQUEST_CODE
 import com.milen.bluetoothapp.R
 import com.milen.bluetoothapp.base.OnItemClickListener
-import com.milen.bluetoothapp.base.ui.pages.BasePageFragment
+import com.milen.bluetoothapp.base.ui.pager.pages.BasePageFragment
 import com.milen.bluetoothapp.ui.MainActivity
 import com.milen.bluetoothapp.ui.adapters.BluetoothDevicesAdapter
 import kotlinx.android.synthetic.main.fragment_scan_devices_page.*
