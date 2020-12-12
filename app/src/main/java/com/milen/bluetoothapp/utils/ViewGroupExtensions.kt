@@ -6,8 +6,8 @@ import android.view.ViewGroup
 
 fun ViewGroup.shouldShow(shouldShow : Boolean){
     when(shouldShow){
-        true -> this.visibility = VISIBLE
-        else -> this.visibility = GONE
+        true -> this.beVisible()
+        else -> this.beGone()
     }
 
 }
