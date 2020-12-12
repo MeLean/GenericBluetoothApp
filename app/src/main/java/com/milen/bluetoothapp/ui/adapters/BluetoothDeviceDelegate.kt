@@ -11,7 +11,7 @@ import com.milen.bluetoothapp.R
 import com.milen.bluetoothapp.base.adapters.BaseAdapterDelegate
 import com.milen.bluetoothapp.base.adapters.BaseViewHolder
 import com.milen.bluetoothapp.base.OnItemClickListener
-import kotlinx.android.synthetic.main.item_pared_device.view.*
+import kotlinx.android.synthetic.main.item_bluetooth_device.view.*
 
 
 class BluetoothDeviceDelegate :
@@ -27,7 +27,7 @@ class BluetoothDeviceDelegate :
 
     override fun createViewHolder(parent: ViewGroup): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        return ViewModel(inflater.inflate(R.layout.item_pared_device, parent, false))
+        return ViewModel(inflater.inflate(R.layout.item_bluetooth_device, parent, false))
     }
 
     override fun bindViewHolder(

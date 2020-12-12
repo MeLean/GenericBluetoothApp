@@ -9,14 +9,12 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import androidx.core.widget.addTextChangedListener
 import com.milen.bluetoothapp.R
-import com.milen.bluetoothapp.base.ui.BasePageFragment
+import com.milen.bluetoothapp.base.ui.pages.BasePageFragment
 import com.milen.bluetoothapp.utils.EMPTY_STRING
 import com.milen.bluetoothapp.utils.beGone
 import com.milen.bluetoothapp.utils.beVisible
-import com.milen.bluetoothapp.utils.shouldShow
 import kotlinx.android.synthetic.main.fragment_remote_control_page.*
 import kotlinx.android.synthetic.main.fragment_remote_control_page.view.*
-import kotlinx.android.synthetic.main.item_bluetooth_not_enabled.view.*
 
 class RemoteControlPageFragment : BasePageFragment(), View.OnClickListener {
 

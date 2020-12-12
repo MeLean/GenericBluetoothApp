@@ -8,9 +8,10 @@
     <string name="close">close</string>
     <string name="device_not_discovering">Not Discoverable</string>
     <string name="device_discovering">Discoverable</string>
-    <string name="page_monitoring">Monitoring</string>
-    <string name="page_pared_devices">Pared Devices</string>
-    <string name="page_remote_control">Remote control</string>
+    <string name="page_monitoring">Monitor Connection</string>
+    <string name="page_scan_devices">Scan for Devices</string>
+    <string name="page_pared_devices">List Pared Devices</string>
+    <string name="page_remote_control">Remote Control Page</string>
     <string name="no_bluetooth">Bluetooth is off.\nPlease, switch it on!</string>
     <string name="selected_device_">Device %s was selected!</string>
     <string name="remote_custom_command_hint">Enter custom command</string>
@@ -21,5 +22,7 @@
     <string name="remote_sent_command_hint">Last command sent</string>
     <string name="bluetooth_on">Bluetooth is on!</string>
     <string name="no_device_selected">There is no device selected</string>
-
+    <string name="no_devices_found">There are no devices</string>
+    <string name="click_to_scan_for_devices">Click to scan for devices</string>
+    <string name="device_scanning_start">Device scanning started…</string>
 </resources>

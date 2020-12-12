@@ -3,8 +3,7 @@ package com.milen.bluetoothapp
 object Constants {
 
     const val BLUETOOTH_START_REQUEST_CODE = 123
-    const val BLUETOOTH_DISCOVERY_REQUEST_CODE = 321
-    const val BLUETOOTH_DISCOVERY_SECONDS_COUNT = 240
+    const val PERMISSION_REQUEST_CODE = 12345
 
     const val SHARED_PREF_NAME = "GenericBluetoothAppSharedPref"
     const val AUTO_COMPLETE_SET = "autocomplete_string_set"

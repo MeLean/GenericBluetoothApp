@@ -23,16 +23,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
     private val mSharedPrefInterface: ApplicationSharedPrefInterface =
         initAndroidSharedPreferences(application)
-    private val mBluetoothAvailability = MutableLiveData<Boolean>()
+    private val mBluetoothAvailability = MutableLiveData<Boolean?>()
     private val mCustomCommandsAutoCompleteSet = MutableLiveData<Set<String>>()
     private val mUpValue = MutableLiveData<String>()
     private val mDownValue = MutableLiveData<String>()
     private val mLeftValue = MutableLiveData<String>()
     private val mRightValue = MutableLiveData<String>()
     private val mSelectedDevice = MutableLiveData<BluetoothDevice?>()
+    private val mScannedDevices = MutableLiveData<List<BluetoothDevice>>()
     private val mLastCommand = MutableLiveData<String>()
     private val mIncomingMessage = MutableLiveData<String>()
     private val mShouldScroll = MutableLiveData<Page>()
+    private val mBluetoothPermissionGranted = MutableLiveData<Boolean>()
 
     private val mIncomingMsgHandler: Handler = Handler { msg ->
         if(msg.what == MESSAGE_FAIL_CONNECT){
@@ -70,7 +72,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             = MyBluetoothService.getInstance(bluetoothAdapter, mIncomingMsgHandler)
 
     init {
-        mBluetoothAvailability.value = bluetoothAdapter?.isEnabled == false
+        mBluetoothAvailability.value = bluetoothAdapter?.isEnabled
+        mScannedDevices.value = listOf()
         mCustomCommandsAutoCompleteSet.value =
             mSharedPrefInterface.readStringSetOrDefault(Constants.AUTO_COMPLETE_SET)
         mUpValue.value =
@@ -88,7 +91,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         mShouldScroll.value = page
     }
 
-    fun getBluetoothAvailability() : LiveData<Boolean> = mBluetoothAvailability
+    fun getBluetoothAvailability() : LiveData<Boolean?> = mBluetoothAvailability
     fun setBluetoothAvailability(isAvailable: Boolean) {
         mBluetoothAvailability.value = isAvailable
 
@@ -155,6 +158,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         )
     }
 
+    fun getBluetoothPermissionGranted() : LiveData<Boolean> = mBluetoothPermissionGranted
+    fun setBluetoothPermissionGranted(permissionState: Boolean) {
+        mBluetoothPermissionGranted.value = permissionState
+    }
+
     private fun showIncomingMessage(msg: String) {
         Toast.makeText(
             getApplication<GenericBluetoothApp>().applicationContext,
@@ -169,4 +177,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         setBluetoothDevice(null)
         mBluetoothService.stopService()
     }
+
+
 }

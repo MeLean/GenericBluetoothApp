@@ -9,7 +9,7 @@ import com.milen.bluetoothapp.base.adapters.BaseViewHolder
 import com.milen.bluetoothapp.base.OnItemClickListener
 
 
-class ParedDevicesAdapter(private val listener: OnItemClickListener<BluetoothDevice?>) : RecyclerView.Adapter<BaseViewHolder>() {
+class BluetoothDevicesAdapter(private val listener: OnItemClickListener<BluetoothDevice?>) : RecyclerView.Adapter<BaseViewHolder>() {
     private var chosenPosition = NO_POSITION
     private val itemDelegate = BluetoothDeviceDelegate()
     private val differ: AsyncListDiffer<BluetoothDevice> = createAdapterDiffer()
@@ -57,6 +57,12 @@ class ParedDevicesAdapter(private val listener: OnItemClickListener<BluetoothDev
            chosenPosition = NO_POSITION
            notifyItemChanged(lastPosition)
        }
+    }
+
+    fun addDevice(device: BluetoothDevice) {
+        val newList = differ.currentList
+        newList.add(device)
+        setData(newList)
     }
 
     companion object{

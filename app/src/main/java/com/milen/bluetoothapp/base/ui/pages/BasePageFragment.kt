@@ -1,4 +1,4 @@
-package com.milen.bluetoothapp.base.ui
+package com.milen.bluetoothapp.base.ui.pages
 
 import android.os.Bundle
 import android.view.View
@@ -16,7 +16,7 @@ abstract class BasePageFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         viewModel.getBluetoothAvailability().observe(viewLifecycleOwner, {
-            val shouldShowNoBlueTooth = !it
+            val shouldShowNoBlueTooth = it == false
             view.no_bluetooth_layout?.shouldShow(shouldShowNoBlueTooth)
         })
 

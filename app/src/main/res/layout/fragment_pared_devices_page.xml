@@ -13,7 +13,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:listitem="@layout/item_pared_device" />
+        tools:listitem="@layout/item_bluetooth_device" />
 
     <include layout="@layout/item_bluetooth_not_enabled"/>
 

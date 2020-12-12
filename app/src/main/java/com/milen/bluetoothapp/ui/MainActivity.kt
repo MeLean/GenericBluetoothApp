@@ -2,16 +2,14 @@ package com.milen.bluetoothapp.ui
 
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.tabs.TabLayoutMediator
 import com.milen.bluetoothapp.Constants.BLUETOOTH_START_REQUEST_CODE
+import com.milen.bluetoothapp.Constants.PERMISSION_REQUEST_CODE
 import com.milen.bluetoothapp.R
 import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter
 import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter.Page.*
@@ -22,24 +20,6 @@ class MainActivity : AppCompatActivity() {
     private var denyCount = 0
     private val viewModel: MainViewModel by viewModels()
 
-    //TODO Create a BroadcastReceiver for ACTION_FOUND.
-    private val receiver = object : BroadcastReceiver() {
-
-        override fun onReceive(context: Context, intent: Intent) {
-            when(intent.action) {
-                BluetoothDevice.ACTION_FOUND -> {
-                    // Discovery has found a device. Get the BluetoothDevice
-                    // object and its info from the Intent.
-                    val device: BluetoothDevice? =
-                        intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
-                    val deviceName = device?.name
-                    val deviceHardwareAddress = device?.address // MAC address
-                }
-            }
-        }
-    }
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -49,14 +29,6 @@ class MainActivity : AppCompatActivity() {
         enableBluetoothIfNot()
 
         initViewPager(values())
-
-        registerReceiver(receiver, IntentFilter(BluetoothDevice.ACTION_FOUND))
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        // unregister the ACTION_FOUND receiver.
-        unregisterReceiver(receiver)
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -74,7 +46,7 @@ class MainActivity : AppCompatActivity() {
             }.attach()
 
             viewModel.getShouldScrollToPage().observe(this, { page ->
-                viewPager.setCurrentItem(page.ordinal, true)
+                main_bottom_tab_layout?.getTabAt(page.ordinal)?.select()
             })
 
             if(viewModel.bluetoothAdapter?.isEnabled == true){
@@ -93,13 +65,32 @@ class MainActivity : AppCompatActivity() {
 
     private fun enableBluetoothIfNot() {
         viewModel.getBluetoothAvailability().observe(this, { isAvailable ->
-            if(!isAvailable && denyCount < 2 ){
+            if(isAvailable == false && denyCount < 2 ){
                 denyCount++
-                startActivityForResult(
-                    Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE),
-                    BLUETOOTH_START_REQUEST_CODE
-                )
+                startBluetoothIntent()
             }
         })
+    }
+
+    fun startBluetoothIntent() {
+        startActivityForResult(
+            Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE),
+            BLUETOOTH_START_REQUEST_CODE
+        )
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            PERMISSION_REQUEST_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    viewModel.setBluetoothPermissionGranted(true)
+                }
+            }
+        }
     }
 }
