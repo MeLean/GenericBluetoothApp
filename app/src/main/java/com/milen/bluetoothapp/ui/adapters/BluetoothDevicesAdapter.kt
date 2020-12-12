@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.milen.bluetoothapp.base.adapters.BaseViewHolder
-import com.milen.bluetoothapp.base.OnItemClickListener
+import com.milen.bluetoothapp.base.interfaces.OnItemClickListener
 
 
 class BluetoothDevicesAdapter(private val listener: OnItemClickListener<BluetoothDevice?>) : RecyclerView.Adapter<BaseViewHolder>() {

@@ -10,7 +10,7 @@ import com.google.android.material.switchmaterial.SwitchMaterial
 import com.milen.bluetoothapp.R
 import com.milen.bluetoothapp.base.adapters.BaseAdapterDelegate
 import com.milen.bluetoothapp.base.adapters.BaseViewHolder
-import com.milen.bluetoothapp.base.OnItemClickListener
+import com.milen.bluetoothapp.base.interfaces.OnItemClickListener
 import kotlinx.android.synthetic.main.item_bluetooth_device.view.*
 
 

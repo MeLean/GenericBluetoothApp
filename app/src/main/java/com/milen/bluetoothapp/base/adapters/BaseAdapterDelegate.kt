@@ -3,7 +3,7 @@ package com.milen.bluetoothapp.base.adapters
 import android.view.ViewGroup
 import androidx.annotation.CallSuper
 import androidx.recyclerview.widget.RecyclerView
-import com.milen.bluetoothapp.base.OnItemClickListener
+import com.milen.bluetoothapp.base.interfaces.OnItemClickListener
 
 abstract class BaseAdapterDelegate<T, VH : BaseViewHolder, M> {
 

@@ -1,4 +1,4 @@
-package com.milen.bluetoothapp.base
+package com.milen.bluetoothapp.base.interfaces
 
 import android.view.View
 

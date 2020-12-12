@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.milen.bluetoothapp.R
-import com.milen.bluetoothapp.base.OnItemClickListener
+import com.milen.bluetoothapp.base.interfaces.OnItemClickListener
 import com.milen.bluetoothapp.base.ui.pager.pages.BasePageFragment
 import com.milen.bluetoothapp.ui.MainActivity
 import com.milen.bluetoothapp.ui.adapters.BluetoothDevicesAdapter
