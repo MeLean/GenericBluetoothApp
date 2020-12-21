@@ -13,6 +13,7 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
@@ -61,13 +62,10 @@ class MainActivity : AppCompatActivity() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
                 BluetoothDevice.ACTION_BOND_STATE_CHANGED -> {
-                    Snackbar.make(scan_devices_fab, getString(R.string.device_bound_changed), Snackbar.LENGTH_SHORT)
-                        .show()
+                    showMessage(getString(R.string.device_bound_changed))
 
-                    var device: BluetoothDevice? = null
-                    if(intent.hasExtra(BluetoothDevice.EXTRA_DEVICE)){
-                        device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
-                    }
+                    val device: BluetoothDevice? =
+                        intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
 
                     device?.let {
                         when (it.bondState) {
@@ -207,7 +205,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showMessage(msg: String) {
-        Snackbar.make(main_view_pager, msg, Snackbar.LENGTH_SHORT)
+        Toast.makeText(applicationContext, msg, Toast.LENGTH_LONG)
             .show()
     }
 }
