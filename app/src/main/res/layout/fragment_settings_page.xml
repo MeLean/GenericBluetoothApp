@@ -7,15 +7,14 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_on"
+        style="@style/AppButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:text="@string/on"
         app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/close"
-        style="@style/AppButton"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/close" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_off"
@@ -38,6 +37,30 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.5" />
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_restart_service"
+        style="@style/AppButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:text="@string/start_service"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_on" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_make_device_visible"
+        style="@style/AppButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:text="@string/make_device_visible"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_restart_service"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="@+id/btn_restart_service" />
+
     <ScrollView
         android:id="@+id/scr"
         android:layout_width="0dp"
@@ -45,7 +68,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_start_service">
+        app:layout_constraintTop_toBottomOf="@+id/btn_restart_service"
+        >
 
         <TextView
             android:id="@+id/bluetooth_on"
@@ -58,7 +82,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_start_service" />
+            app:layout_constraintTop_toBottomOf="@+id/btn_restart_service" />
     </ScrollView>
 
     <include

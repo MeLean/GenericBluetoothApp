@@ -2,8 +2,8 @@
     <string name="app_name">Generic Bluetooth App</string>
     <string name="on">Turn Bluetooth ON</string>
     <string name="off">Turn Bluetooth OFF</string>
-    <string name="start_service">Make Visible</string>
-    <string name="stop_service">Stop service</string>
+    <string name="start_service">Restart service</string>
+    <string name="make_device_visible">Make device visible</string>
     <string name="pared_devices">Refresh Devices</string>
     <string name="close">close</string>
     <string name="device_not_discovering">Not Discoverable</string>
@@ -25,4 +25,10 @@
     <string name="no_devices_found">There are no devices</string>
     <string name="click_to_scan_for_devices">Click to scan for devices</string>
     <string name="device_scanning_start">Device scanning started…</string>
+    <string name="device_scanning_finished">Device scanning finished…</string>
+    <string name="device_scanning_failed">Device scanning failed…</string>
+    <string name="device_bound_changed">device bound changed!</string>
+    <string name="device_bound_bonded">device bound bonded!</string>
+    <string name="device_bound_bounding">device bound bonding!</string>
+    <string name="device_bound_none">device bound none!</string>
 </resources>

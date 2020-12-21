@@ -29,8 +29,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val mDownValue = MutableLiveData<String>()
     private val mLeftValue = MutableLiveData<String>()
     private val mRightValue = MutableLiveData<String>()
-    private val mSelectedDevice = MutableLiveData<BluetoothDevice?>()
-    private val mScannedDevices = MutableLiveData<List<BluetoothDevice>>()
+    private val mSelectedParedDevice = MutableLiveData<BluetoothDevice?>()
+    private val mFoundDevices = MutableLiveData<MutableSet<BluetoothDevice>>()
     private val mLastCommand = MutableLiveData<String>()
     private val mIncomingMessage = MutableLiveData<String>()
     private val mShouldScroll = MutableLiveData<Page>()
@@ -39,7 +39,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val mIncomingMsgHandler: Handler = Handler { msg ->
         if(msg.what == MESSAGE_FAIL_CONNECT){
             //Log.d("TEST_IT", "mIncomingMsgHandler failed to connect!")
-            mSelectedDevice.postValue(null)
+            mSelectedParedDevice.postValue(null)
+            restartService()
         }
 
         if(msg.what == MESSAGE_CONNECT_SUCCESS){
@@ -73,7 +74,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         mBluetoothAvailability.value = bluetoothAdapter?.isEnabled
-        mScannedDevices.value = listOf()
+        mFoundDevices.value = mutableSetOf()
         mCustomCommandsAutoCompleteSet.value =
             mSharedPrefInterface.readStringSetOrDefault(Constants.AUTO_COMPLETE_SET)
         mUpValue.value =
@@ -100,6 +101,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             else -> mBluetoothService.stopService()
         }
     }
+
+    fun addFoundDevice(foundDevice : BluetoothDevice){
+       mFoundDevices.value = mFoundDevices.value?.also {
+           it.add(foundDevice)
+       }
+    }
+
+    fun getFoundDevice() : LiveData<MutableSet<BluetoothDevice>> =
+        mFoundDevices
 
     fun getCustomCommandsAutoCompleteSet(): LiveData<Set<String>> = mCustomCommandsAutoCompleteSet
     fun addCustomCommand(command: String) {
@@ -128,15 +138,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     )
 
 
-    fun getBluetoothDevice(): LiveData<BluetoothDevice?> = mSelectedDevice
-    fun setBluetoothDevice(device: BluetoothDevice?) {
+    fun getParedBluetoothDevice(): LiveData<BluetoothDevice?> = mSelectedParedDevice
+    fun setParedBluetoothDevice(device: BluetoothDevice?) {
         if(device != null) {
             mBluetoothService.connectToDevice(device)
         }else{
             mBluetoothService.disconnectAllDevices()
         }
 
-        mSelectedDevice.value = device
+        mSelectedParedDevice.value = device
     }
 
 
@@ -174,9 +184,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     override fun onCleared() {
         super.onCleared()
         //Log.d("TEST_IT", "MainViewModel onCleared")
-        setBluetoothDevice(null)
+        setParedBluetoothDevice(null)
         mBluetoothService.stopService()
     }
 
-
+    fun restartService(){
+        mBluetoothService.startService()
+        mBluetoothService.stopService()
+    }
 }

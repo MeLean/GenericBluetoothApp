@@ -9,5 +9,4 @@ fun ViewGroup.shouldShow(shouldShow : Boolean){
         true -> this.beVisible()
         else -> this.beGone()
     }
-
 }

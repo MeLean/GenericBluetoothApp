@@ -1,5 +1,7 @@
 package com.milen.bluetoothapp.ui.pager.pages
 
+import android.bluetooth.BluetoothAdapter
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +10,7 @@ import com.milen.bluetoothapp.R
 import com.milen.bluetoothapp.base.ui.pager.pages.BasePageFragment
 import kotlinx.android.synthetic.main.fragment_settings_page.view.*
 
+const val DISCOVERY_CODE = 12312
 class MonitoringPageFragment : BasePageFragment() {
 
     override fun onCreateView(
@@ -37,6 +40,14 @@ class MonitoringPageFragment : BasePageFragment() {
         view.btn_on.setOnClickListener {
             viewModel.bluetoothAdapter?.enable()
             setAvailability(true)
+        }
+
+        view.btn_restart_service.setOnClickListener{
+           viewModel.restartService()
+        }
+
+        view.btn_make_device_visible.setOnClickListener{
+            startActivityForResult(Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE), DISCOVERY_CODE)
         }
     }
 

@@ -37,11 +37,11 @@ class ParedDevicesPageFragment : BasePageFragment() {
         bluetoothDevicesAdapter =
             BluetoothDevicesAdapter(object : OnItemClickListener<BluetoothDevice?> {
                 override fun onItemClick(view: View, selectedItem: BluetoothDevice?) {
-                    viewModel.setBluetoothDevice(selectedItem)
+                    viewModel.setParedBluetoothDevice(selectedItem)
                 }
             })
 
-        viewModel.getBluetoothDevice()
+        viewModel.getParedBluetoothDevice()
             .observe(viewLifecycleOwner,
                 { device -> updateUiForDevice(device) }
             )

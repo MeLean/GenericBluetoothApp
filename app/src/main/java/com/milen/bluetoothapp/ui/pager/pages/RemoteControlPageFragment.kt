@@ -72,7 +72,7 @@ class RemoteControlPageFragment : BasePageFragment(), View.OnClickListener {
             { value -> remote_right_edit_text.setText(value) }
         )
 
-        viewModel.getBluetoothDevice().observe(viewLifecycleOwner,
+        viewModel.getParedBluetoothDevice().observe(viewLifecycleOwner,
             { value ->
                 when (value) {
                     null -> {

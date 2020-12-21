@@ -23,7 +23,7 @@ class BluetoothDevicesAdapter(private val listener: OnItemClickListener<Bluetoot
 
     override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
         val viewModel = differ.currentList[position]
-        val isChecked = position==chosenPosition
+        val isChecked = position == chosenPosition
         itemDelegate.bindViewHolder(holder as BluetoothDeviceDelegate.ViewModel, viewModel, position, listener, isChecked)
     }
 
@@ -57,12 +57,6 @@ class BluetoothDevicesAdapter(private val listener: OnItemClickListener<Bluetoot
            chosenPosition = NO_POSITION
            notifyItemChanged(lastPosition)
        }
-    }
-
-    fun addDevice(device: BluetoothDevice) {
-        val newList = differ.currentList
-        newList.add(device)
-        setData(newList)
     }
 
     companion object{

@@ -1,13 +1,11 @@
 package com.milen.bluetoothapp.ui.pager.pages
 
 import android.Manifest
+import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothDevice.*
-import android.content.BroadcastReceiver
-import android.content.Context
+import android.bluetooth.BluetoothDevice.BOND_BONDED
 import android.content.Intent
-import android.content.IntentFilter
-import android.content.pm.PackageManager
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.LOLLIPOP
 import android.os.Bundle
@@ -18,86 +16,59 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
+import com.milen.bluetoothapp.BuildConfig
 import com.milen.bluetoothapp.Constants.PERMISSION_REQUEST_CODE
 import com.milen.bluetoothapp.R
 import com.milen.bluetoothapp.base.interfaces.OnItemClickListener
 import com.milen.bluetoothapp.base.ui.pager.pages.BasePageFragment
 import com.milen.bluetoothapp.ui.MainActivity
 import com.milen.bluetoothapp.ui.adapters.BluetoothDevicesAdapter
+import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter
+import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter.Page.PAGE_PARED_DEVICES
 import kotlinx.android.synthetic.main.fragment_scan_devices_page.*
 import kotlinx.android.synthetic.main.fragment_scan_devices_page.view.*
 
+const val ACTION_DISCOVERY_FAILED = "${BuildConfig.APPLICATION_ID}.ACTION_DISCOVERY_FAILED"
 class ScanDevicesPageFragment : BasePageFragment() {
     private lateinit var scanDevicesAdapter: BluetoothDevicesAdapter
-    private val deviceFoundReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            when (intent.action) {
-                ACTION_FOUND -> {
-                    // Discovery has found a device. Get the BluetoothDevice
-                    // object and its info from the Intent.
-                    val device: BluetoothDevice? =
-                        intent.getParcelableExtra(EXTRA_DEVICE)
-                    device?.let {
-                        scanDevicesAdapter.addDevice(it)
-                    }
-                }
-            }
-        }
-    }
-
-    private val deviceBoundStateChangedReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            when (intent.action) {
-                ACTION_BOND_STATE_CHANGED -> {
-                    Snackbar.make(scan_devices_fab, "device bound changed!", Snackbar.LENGTH_SHORT).show()
-                    val device: BluetoothDevice? =
-                        intent.getParcelableExtra(EXTRA_DEVICE)
-                    device?.let {
-                        when(it.bondState){
-                            BOND_BONDED -> {
-                                Snackbar.make(scan_devices_fab, "device bound bonded!", Snackbar.LENGTH_SHORT).show()
-                            }
-                            BOND_BONDING -> {
-                                Snackbar.make(scan_devices_fab, "device bound bonding!", Snackbar.LENGTH_SHORT).show()
-                            }
-                            BOND_NONE -> {
-                                Snackbar.make(scan_devices_fab, "device bound none!", Snackbar.LENGTH_SHORT).show()
-                            }
-                        }
-                    }
-
-
-                }
-            }
-        }
-    }
 
     private fun initRecycler(view: View) {
         scanDevicesAdapter =
             BluetoothDevicesAdapter(object : OnItemClickListener<BluetoothDevice?> {
                 override fun onItemClick(view: View, selectedItem: BluetoothDevice?) {
-                    Snackbar.make(scan_devices_fab, "device name ${selectedItem?.name}", Snackbar.LENGTH_LONG).show()
                     selectedItem?.let {
                         viewModel.bluetoothAdapter?.cancelDiscovery()
-                        it.createBond()
+                        manageFoundDevicePicked(it)
                     }
                 }
             })
 
-//        viewModel.getScanBluetoothDevice()
-//            .observe(viewLifecycleOwner,
-//                { device -> updateUiForDevice(device) }
-//            )
+        viewModel.getFoundDevice().observe(viewLifecycleOwner,
+            { devices -> updateUiForDevice(devices.toList()) }
+        )
 
         val recycler = view.scan_device_recycler
 
         recycler?.let {
             it.layoutManager = LinearLayoutManager(requireContext())
             it.setHasFixedSize(true)
-            val devices = listOf<BluetoothDevice>()//null ?: listOf()
-            scanDevicesAdapter.setData(devices)
             it.adapter = scanDevicesAdapter
         }
+    }
+
+    private fun manageFoundDevicePicked(it: BluetoothDevice): Any {
+        return when (it.bondState) {
+            BOND_BONDED -> {
+                viewModel.setParedBluetoothDevice(it)
+                viewModel.setShouldScrollToPage(PAGE_PARED_DEVICES)
+            }
+
+            else -> it.createBond()
+        }
+    }
+
+    private fun updateUiForDevice(devices: List<BluetoothDevice>) {
+        scanDevicesAdapter.setData(devices)
     }
 
     override fun onCreateView(
@@ -111,80 +82,69 @@ class ScanDevicesPageFragment : BasePageFragment() {
         return view
     }
 
-    override fun onResume() {
-        super.onResume()
-        requireActivity().registerReceiver(
-            deviceFoundReceiver,
-            IntentFilter(ACTION_FOUND)
-        )
-        requireActivity().registerReceiver(
-            deviceBoundStateChangedReceiver,
-            IntentFilter(ACTION_BOND_STATE_CHANGED)
-        )
-    }
-
-    override fun onPause() {
-        super.onPause()
-        requireActivity().unregisterReceiver(deviceFoundReceiver)
-        requireActivity().unregisterReceiver(deviceBoundStateChangedReceiver)
-    }
-
-
     private fun initClickListeners(view: View) {
         view.scan_devices_fab.setOnClickListener {
-            if(viewModel.bluetoothAdapter?.isEnabled != true ) {
+            if (viewModel.bluetoothAdapter?.isEnabled != true) {
                 when (requireActivity()) {
-                    is MainActivity -> (requireActivity() as MainActivity).startBluetoothIntent()
+                    is MainActivity -> (requireActivity() as MainActivity).startBluetoothOnIntent()
                 }
                 return@setOnClickListener
             }
 
-            launchScanningIntent()
+            launchScanning()
         }
     }
 
-    private fun launchScanningIntent() {
-        viewModel.bluetoothAdapter?.let {
-            if (!isLocationPermissionNotGranted()) {
-                it.cancelDiscovery()
-                it.startDiscovery()
-                Snackbar.make(scan_devices_fab, getString(R.string.device_scanning_start), Snackbar.LENGTH_LONG).show()
-
-            }else{
-                viewModel.getBluetoothPermissionGranted().observe(viewLifecycleOwner, {
-                    launchScanningIntent()
-                })
-            }
+    private fun launchScanning() {
+        viewModel.bluetoothAdapter?.let { adapter ->
+            viewModel.setBluetoothPermissionGranted(isLocationPermissionGranted())
+            viewModel.getBluetoothPermissionGranted().observe(viewLifecycleOwner, { hasPermission ->
+                if (hasPermission) {
+                    startDiscoveryMode(adapter)
+                } else {
+                    requestPermissions()
+                }
+            })
         }
     }
 
-    private fun isLocationPermissionNotGranted(): Boolean {
-        var permsNotGranted = false
-        if (SDK_INT > LOLLIPOP) {
-            val permissionCoarseLocation = ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            )
-            val permissionFineLocation = ContextCompat.checkSelfPermission(
-                requireContext(),
+    private fun startDiscoveryMode(it: BluetoothAdapter) {
+        it.cancelDiscovery()
+        if (!it.startDiscovery()) {
+            requireActivity().sendBroadcast(Intent(ACTION_DISCOVERY_FAILED))
+        }
+    }
+
+    private fun isLocationPermissionGranted(): Boolean {
+        return when (SDK_INT >= LOLLIPOP) {
+            true -> checkLollipopPermissions()
+            else -> true
+        }
+    }
+
+    private fun requestPermissions() {
+        ActivityCompat.requestPermissions(
+            requireActivity(),
+            arrayOf(
+                Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION
-            )
+            ),
+            PERMISSION_REQUEST_CODE
+        )
+    }
 
-            permsNotGranted = permissionCoarseLocation != PackageManager.PERMISSION_GRANTED ||
-                    permissionFineLocation != PackageManager.PERMISSION_GRANTED
+    private fun checkLollipopPermissions(): Boolean {
 
-            if (permsNotGranted) {
-                ActivityCompat.requestPermissions(
-                    requireActivity(),
-                    arrayOf(
-                        Manifest.permission.ACCESS_COARSE_LOCATION,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    ),
-                    PERMISSION_REQUEST_CODE
-                )
-            }
-        }
+        val permissionCoarseLocation = ContextCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+        val permissionFineLocation = ContextCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
 
-        return permsNotGranted
+        return permissionCoarseLocation == PERMISSION_GRANTED &&
+                permissionFineLocation == PERMISSION_GRANTED
     }
 }

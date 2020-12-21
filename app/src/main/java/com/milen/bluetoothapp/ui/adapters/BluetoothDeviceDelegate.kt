@@ -1,5 +1,6 @@
 package com.milen.bluetoothapp.ui.adapters
 
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import com.milen.bluetoothapp.R
 import com.milen.bluetoothapp.base.adapters.BaseAdapterDelegate
 import com.milen.bluetoothapp.base.adapters.BaseViewHolder
 import com.milen.bluetoothapp.base.interfaces.OnItemClickListener
+import com.milen.bluetoothapp.utils.EMPTY_STRING
 import kotlinx.android.synthetic.main.item_bluetooth_device.view.*
 
 
@@ -30,6 +32,7 @@ class BluetoothDeviceDelegate :
         return ViewModel(inflater.inflate(R.layout.item_bluetooth_device, parent, false))
     }
 
+    @SuppressLint("SetTextI18n")
     override fun bindViewHolder(
         holder: ViewModel,
         model: BluetoothDevice,
@@ -37,9 +40,11 @@ class BluetoothDeviceDelegate :
         listener: OnItemClickListener<BluetoothDevice?>,
         isChecked : Boolean
     ) {
-        holder.deviceName.text = model.name
+
+        holder.deviceName.text = model.name ?: EMPTY_STRING
         holder.deviceMac.text = model.address
-        holder.deviceInfo.text = model.uuids[0].uuid.toString()
+        holder.deviceInfo.text = "${model.javaClass.simpleName} : ${model.type}"
+
         if(isChecked){
             holder.deviceHolder.setBackgroundResource(R.color.colorPrimary)
         }else{
