@@ -6,13 +6,13 @@ import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.os.Handler
 import android.os.Message
-import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.milen.GenericBluetoothApp
 import com.milen.bluetoothapp.Constants
+import com.milen.bluetoothapp.data.entities.BluetoothMessageEntity
 import com.milen.bluetoothapp.data.sharedPreferences.ApplicationSharedPrefInterface
 import com.milen.bluetoothapp.data.sharedPreferences.DefaultApplicationSharedPreferences
 import com.milen.bluetoothapp.services.*
@@ -32,41 +32,30 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val mSelectedParedDevice = MutableLiveData<BluetoothDevice?>()
     private val mFoundDevices = MutableLiveData<MutableSet<BluetoothDevice>>()
     private val mLastCommand = MutableLiveData<String>()
-    private val mIncomingMessage = MutableLiveData<String>()
+    private val mIncomingMessages = MutableLiveData<MutableList<BluetoothMessageEntity>>()
     private val mShouldScroll = MutableLiveData<Page>()
     private val mBluetoothPermissionGranted = MutableLiveData<Boolean>()
 
     private val mIncomingMsgHandler: Handler = Handler { msg ->
         if(msg.what == MESSAGE_FAIL_CONNECT){
-            //Log.d("TEST_IT", "mIncomingMsgHandler failed to connect!")
             mSelectedParedDevice.postValue(null)
-            restartService()
         }
 
         if(msg.what == MESSAGE_CONNECT_SUCCESS){
-            //Log.d("TEST_IT", "mIncomingMsgHandler connected!")
             mShouldScroll.value = Page.PAGE_REMOTE_CONTROL
         }
 
-
         msg.obj?.let {
             if (it is ByteArray) {
-                val msgStr = createStringMsg(it, msg)
-                Log.d("TEST_IT", "mIncomingMsgHandler $msgStr what: ${msg.what}")
-                mIncomingMessage.postValue(msgStr)
+                val msgStr = it.decodeToString()
+                mIncomingMessages.postValue(mIncomingMessages.value?.also{ messages ->
+                    messages.add(BluetoothMessageEntity(msg.what, msgStr, System.currentTimeMillis()))
+                })
+
                 showIncomingMessage(msgStr)
             }
         }
         true
-    }
-
-    private fun createStringMsg(arr: ByteArray, msg: Message): String {
-        val msgStr = arr.decodeToString()
-        return when(msg.what){
-            MESSAGE_READ -> "received: $msgStr"
-            MESSAGE_WRITE -> "sent: $msgStr"
-            else -> msgStr
-        }
     }
 
     private val mBluetoothService
@@ -74,7 +63,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         mBluetoothAvailability.value = bluetoothAdapter?.isEnabled
+        setBluetoothAvailability(bluetoothAdapter?.isEnabled == true)
         mFoundDevices.value = mutableSetOf()
+        mIncomingMessages.value = mutableListOf()
         mCustomCommandsAutoCompleteSet.value =
             mSharedPrefInterface.readStringSetOrDefault(Constants.AUTO_COMPLETE_SET)
         mUpValue.value =
@@ -122,7 +113,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun getIncomingMessage(): LiveData<String> = mIncomingMessage
+    fun getIncomingMessages(): LiveData<MutableList<BluetoothMessageEntity>> = mIncomingMessages
 
     fun getUpValue(): LiveData<String> = mUpValue
     fun getDownValue(): LiveData<String> = mDownValue
@@ -185,11 +176,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         super.onCleared()
         //Log.d("TEST_IT", "MainViewModel onCleared")
         setParedBluetoothDevice(null)
-        mBluetoothService.stopService()
-    }
-
-    fun restartService(){
-        mBluetoothService.startService()
         mBluetoothService.stopService()
     }
 }

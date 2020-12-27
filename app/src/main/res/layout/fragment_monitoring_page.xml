@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_on"
@@ -61,30 +61,28 @@
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toTopOf="@+id/btn_restart_service" />
 
-    <ScrollView
-        android:id="@+id/scr"
+    <TextView
+        android:id="@+id/bluetooth_on"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/bluetooth_on"
+        android:textSize="@dimen/text_medium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_restart_service" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/bluetooth_message_recycler"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_restart_service"
-        >
-
-        <TextView
-            android:id="@+id/bluetooth_on"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/bluetooth_on"
-            android:textSize="@dimen/text_medium"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_restart_service" />
-    </ScrollView>
-
+        app:layout_constraintTop_toBottomOf="@+id/bluetooth_on"
+        tools:itemCount="10"
+        tools:listitem="@layout/item_bluetooth_message"
+        />
     <include
         layout="@layout/item_bluetooth_not_enabled"
         android:layout_width="0dp"

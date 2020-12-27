@@ -24,7 +24,7 @@ const val MESSAGE_FAIL_CONNECT: Int = 3
 const val MESSAGE_CONNECT_SUCCESS: Int = 4
 
 const val NAME = "BluetoothServiceSecure"
-private val MY_UUID: UUID = UUID.fromString("00001101a-0000-1000-8000-00805f9b34fb")
+private val MY_UUID: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
 
 class MyBluetoothService(
     private val bluetoothAdapter: BluetoothAdapter?,
@@ -66,8 +66,8 @@ class MyBluetoothService(
                     }
                 } catch (e: IOException) {
                     Log.e(TAG, "Socket's accept() method failed", e)
-                    MESSAGE_ERROR
                     shouldLoop = false
+                    sendErrorMsg(e, MESSAGE_ERROR)
                     null
                 }
 

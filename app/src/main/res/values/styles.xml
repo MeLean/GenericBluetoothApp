@@ -45,5 +45,14 @@
 
     </style>
 
+    <style name="NormalTextLayoutStyle" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="SmallGrayNormalTextLayoutStyle" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">@android:color/darker_gray</item>
+        <item name="android:textSize">12sp</item>
+    </style>
 
 </resources>

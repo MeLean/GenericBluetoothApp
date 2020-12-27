@@ -6,28 +6,45 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.milen.bluetoothapp.R
+import com.milen.bluetoothapp.base.interfaces.OnItemClickListener
 import com.milen.bluetoothapp.base.ui.pager.pages.BasePageFragment
-import kotlinx.android.synthetic.main.fragment_settings_page.view.*
+import com.milen.bluetoothapp.data.entities.BluetoothMessageEntity
+import com.milen.bluetoothapp.ui.adapters.BluetoothMessageAdapter
+import kotlinx.android.synthetic.main.fragment_monitoring_page.view.*
 
 const val DISCOVERY_CODE = 12312
 class MonitoringPageFragment : BasePageFragment() {
+    private lateinit var bluetoothMessageAdapter: BluetoothMessageAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_settings_page, container, false)
-        subscribeToIncomingMessages(view)
+        val view = inflater.inflate(R.layout.fragment_monitoring_page, container, false)
+        initRecycler(view)
         setOnClickListeners(view)
         return view
     }
 
-    private fun subscribeToIncomingMessages(view: View) {
-        viewModel.getIncomingMessage().observe(viewLifecycleOwner, {
-            val text = "${view.bluetooth_on.text}\n$it"
-            view.bluetooth_on.text = text
+    private fun initRecycler(view: View) {
+        bluetoothMessageAdapter =
+            BluetoothMessageAdapter(object : OnItemClickListener<BluetoothMessageEntity?> {
+                override fun onItemClick(view: View, selectedItem: BluetoothMessageEntity?) {
+                    /*do nothing*/
+                }
+            })
+
+        view.bluetooth_message_recycler?.let {
+            it.layoutManager = LinearLayoutManager(requireContext())
+            it.setHasFixedSize(true)
+            it.adapter = bluetoothMessageAdapter
+        }
+
+        viewModel.getIncomingMessages().observe(viewLifecycleOwner, {
+            bluetoothMessageAdapter.setData(it)
         })
     }
 
@@ -43,7 +60,7 @@ class MonitoringPageFragment : BasePageFragment() {
         }
 
         view.btn_restart_service.setOnClickListener{
-           viewModel.restartService()
+            //TODO do nothing for now
         }
 
         view.btn_make_device_visible.setOnClickListener{

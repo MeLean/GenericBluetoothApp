@@ -31,4 +31,7 @@
     <string name="device_bound_bonded">device bound bonded!</string>
     <string name="device_bound_bounding">device bound bonding!</string>
     <string name="device_bound_none">device bound none!</string>
+    <string name="error_msg">"error: "</string>
+    <string name="send_meg">"sent: "</string>
+    <string name="received_msg">"received: "</string>
 </resources>

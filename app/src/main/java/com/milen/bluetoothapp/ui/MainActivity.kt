@@ -27,7 +27,6 @@ import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter.Page.values
 import com.milen.bluetoothapp.ui.pager.pages.ACTION_DISCOVERY_FAILED
 import com.milen.bluetoothapp.view_models.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_scan_devices_page.*
 
 
 class MainActivity : AppCompatActivity() {
