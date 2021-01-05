@@ -13,10 +13,11 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
 import com.milen.bluetoothapp.Constants.BLUETOOTH_START_REQUEST_CODE
 import com.milen.bluetoothapp.Constants.PERMISSION_REQUEST_CODE
@@ -25,9 +26,9 @@ import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter
 import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter.Page.PAGE_PARED_DEVICES
 import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter.Page.values
 import com.milen.bluetoothapp.ui.pager.pages.ACTION_DISCOVERY_FAILED
+import com.milen.bluetoothapp.utils.EMPTY_STRING
 import com.milen.bluetoothapp.view_models.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
-
 
 class MainActivity : AppCompatActivity() {
     private var denyCount = 0
@@ -98,6 +99,35 @@ class MainActivity : AppCompatActivity() {
         enableBluetoothIfNot()
 
         initViewPager(values())
+
+        manageDeepLinksIfAny(intent)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        manageDeepLinksIfAny(intent)
+
+    }
+
+    private fun manageDeepLinksIfAny(intent: Intent?) {
+        viewModel.checkIfDeepLinkItemsInIntent(intent)
+        viewModel.getDeepLinkItems().observe(this, { map ->
+            var textViewVisibility = GONE
+            var textViewText = EMPTY_STRING
+
+            if (!map.isNullOrEmpty()) {
+                textViewVisibility = VISIBLE
+                val itemsText = map.keys.joinToString {
+                    "$it:${map[it]}"
+                }
+                textViewText = "${getString(R.string.deep_linking_called_text)} $itemsText"
+            }
+
+            main_deep_link_text.apply {
+                visibility = textViewVisibility
+                text = textViewText
+            }
+        })
     }
 
     override fun onStart() {

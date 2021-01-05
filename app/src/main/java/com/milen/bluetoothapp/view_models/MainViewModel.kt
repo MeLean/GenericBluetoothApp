@@ -4,8 +4,8 @@ import android.app.Application
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.Context
+import android.content.Intent
 import android.os.Handler
-import android.os.Message
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -15,14 +15,19 @@ import com.milen.bluetoothapp.Constants
 import com.milen.bluetoothapp.data.entities.BluetoothMessageEntity
 import com.milen.bluetoothapp.data.sharedPreferences.ApplicationSharedPrefInterface
 import com.milen.bluetoothapp.data.sharedPreferences.DefaultApplicationSharedPreferences
-import com.milen.bluetoothapp.services.*
-import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter.*
+import com.milen.bluetoothapp.services.DeepLinkItemExtractorService
+import com.milen.bluetoothapp.services.MESSAGE_CONNECT_SUCCESS
+import com.milen.bluetoothapp.services.MESSAGE_FAIL_CONNECT
+import com.milen.bluetoothapp.services.MyBluetoothService
+import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter.Page
 import com.milen.bluetoothapp.utils.EMPTY_STRING
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
     private val mSharedPrefInterface: ApplicationSharedPrefInterface =
         initAndroidSharedPreferences(application)
+    private val mDeepLinkService = DeepLinkItemExtractorService()
+
     private val mBluetoothAvailability = MutableLiveData<Boolean?>()
     private val mCustomCommandsAutoCompleteSet = MutableLiveData<Set<String>>()
     private val mUpValue = MutableLiveData<String>()
@@ -35,6 +40,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val mIncomingMessages = MutableLiveData<MutableList<BluetoothMessageEntity>>()
     private val mShouldScroll = MutableLiveData<Page>()
     private val mBluetoothPermissionGranted = MutableLiveData<Boolean>()
+    private val mDeepLinkItems = MutableLiveData<Map<String, String>?>()
 
     private val mIncomingMsgHandler: Handler = Handler { msg ->
         if(msg.what == MESSAGE_FAIL_CONNECT){
@@ -178,4 +184,24 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         setParedBluetoothDevice(null)
         mBluetoothService.stopService()
     }
+
+    fun checkIfDeepLinkItemsInIntent(intent: Intent?) {
+        if (intent != null && Intent.ACTION_VIEW == intent.action) {
+            mDeepLinkService.extractQueryParams(
+                intent.data,
+                object : DeepLinkItemExtractorService.OnItemsExtracted {
+                    override fun onItemsExtracted(items: Map<String, String>?) {
+                        mDeepLinkItems.value = items
+                    }
+                }
+            )
+        } else {
+            mDeepLinkItems.value = null
+        }
+
+    }
+
+    fun getDeepLinkItems(): LiveData<Map<String, String>?> = mDeepLinkItems
+
+
 }

@@ -22,6 +22,21 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter android:label="@string/deep_linking_label">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="www.bluetoothapp.milen.com"
+                    android:pathPrefix="/main" />
+            </intent-filter>
+            <intent-filter android:label="@string/deep_linking_label">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="bluetoothapp"
+                    android:host="main" />
+            </intent-filter>
         </activity>
     </application>
 

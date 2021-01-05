@@ -9,6 +9,18 @@
     tools:context=".ui.MainActivity"
     >
 
+    <TextView
+        android:id="@+id/main_deep_link_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="I was called by deep link"
+        style="@style/NormalTextLayoutStyle"
+        android:textAlignment="center"
+        />
+
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/main_view_pager"
         android:layout_width="0dp"
@@ -16,7 +28,7 @@
         app:layout_constraintBottom_toTopOf="@+id/main_bottom_tab_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/main_deep_link_text" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/main_bottom_tab_layout"
