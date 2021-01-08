@@ -2,7 +2,6 @@ package com.milen.bluetoothapp.ui.adapters
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -13,6 +12,7 @@ import com.milen.bluetoothapp.base.adapters.BaseAdapterDelegate
 import com.milen.bluetoothapp.base.adapters.BaseViewHolder
 import com.milen.bluetoothapp.base.interfaces.OnItemClickListener
 import com.milen.bluetoothapp.utils.EMPTY_STRING
+import com.milen.bluetoothapp.utils.inflateViewWithoutAttaching
 import kotlinx.android.synthetic.main.item_bluetooth_device.view.*
 
 
@@ -28,8 +28,7 @@ class BluetoothDeviceDelegate :
     }
 
     override fun createViewHolder(parent: ViewGroup): RecyclerView.ViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        return ViewModel(inflater.inflate(R.layout.item_bluetooth_device, parent, false))
+        return ViewModel(parent.inflateViewWithoutAttaching(R.layout.item_bluetooth_device))
     }
 
     @SuppressLint("SetTextI18n")

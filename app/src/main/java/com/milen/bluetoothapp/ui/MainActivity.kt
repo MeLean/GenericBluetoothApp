@@ -19,8 +19,6 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.tabs.TabLayoutMediator
-import com.milen.bluetoothapp.Constants.BLUETOOTH_START_REQUEST_CODE
-import com.milen.bluetoothapp.Constants.PERMISSION_REQUEST_CODE
 import com.milen.bluetoothapp.R
 import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter
 import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter.Page.PAGE_PARED_DEVICES
@@ -29,6 +27,9 @@ import com.milen.bluetoothapp.ui.pager.pages.ACTION_DISCOVERY_FAILED
 import com.milen.bluetoothapp.utils.EMPTY_STRING
 import com.milen.bluetoothapp.view_models.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
+
+const val BLUETOOTH_START_REQUEST_CODE = 123
+const val PERMISSION_REQUEST_CODE = 12345
 
 class MainActivity : AppCompatActivity() {
     private var denyCount = 0
@@ -50,9 +51,8 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 ACTION_DISCOVERY_FAILED -> {
-                    //TODO SHOW POPUP WITH IMAGE
                     showMessage(getString(R.string.device_scanning_failed))
-                    startActivityForResult(Intent(ACTION_LOCATION_SOURCE_SETTINGS), 0);
+                    startActivityForResult(Intent(ACTION_LOCATION_SOURCE_SETTINGS), 0)
                 }
             }
         }

@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.milen.bluetoothapp.base.adapters.BaseViewHolder
 import com.milen.bluetoothapp.base.interfaces.OnItemClickListener
 
-
+internal const val NO_POSITION = -1
 class BluetoothDevicesAdapter(private val listener: OnItemClickListener<BluetoothDevice?>) : RecyclerView.Adapter<BaseViewHolder>() {
     private var chosenPosition = NO_POSITION
     private val itemDelegate = BluetoothDeviceDelegate()
@@ -42,7 +42,7 @@ class BluetoothDevicesAdapter(private val listener: OnItemClickListener<Bluetoot
         })
     }
 
-    fun setChosenDevice(device : BluetoothDevice?){
+    fun markDeviceAsChosen(device : BluetoothDevice?){
        if(device != null){
            val lastPosition = chosenPosition
            for(i in 0 until differ.currentList.size){
@@ -57,9 +57,5 @@ class BluetoothDevicesAdapter(private val listener: OnItemClickListener<Bluetoot
            chosenPosition = NO_POSITION
            notifyItemChanged(lastPosition)
        }
-    }
-
-    companion object{
-        const val NO_POSITION = -1
     }
 }

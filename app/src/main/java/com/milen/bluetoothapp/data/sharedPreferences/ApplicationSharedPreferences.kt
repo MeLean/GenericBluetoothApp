@@ -8,7 +8,7 @@ import com.google.gson.reflect.TypeToken
 import com.milen.bluetoothapp.utils.EMPTY_STRING
 import java.lang.reflect.Type
 
-interface ApplicationSharedPrefInterface {
+interface ApplicationSharedPreferences {
 
     fun hasCachedKey(key: String): Boolean
 
@@ -35,7 +35,7 @@ interface ApplicationSharedPrefInterface {
 //    fun readStoredRemoteControlsNavNamesOfDefault(key: String): RemoteControlNavValues?
 }
 
-class DefaultApplicationSharedPreferences(private val sharedPreferences: SharedPreferences): ApplicationSharedPrefInterface {
+class DefaultApplicationSharedPreferences(private val sharedPreferences: SharedPreferences): ApplicationSharedPreferences {
 
     override fun hasCachedKey(key: String): Boolean = sharedPreferences.contains(key)
 

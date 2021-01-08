@@ -2,7 +2,6 @@ package com.milen.bluetoothapp.ui.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -15,6 +14,7 @@ import com.milen.bluetoothapp.data.entities.BluetoothMessageEntity
 import com.milen.bluetoothapp.services.MESSAGE_ERROR
 import com.milen.bluetoothapp.services.MESSAGE_READ
 import com.milen.bluetoothapp.services.MESSAGE_WRITE
+import com.milen.bluetoothapp.utils.inflateViewWithoutAttaching
 import kotlinx.android.synthetic.main.item_bluetooth_message.view.*
 import java.util.*
 
@@ -29,8 +29,7 @@ class BluetoothMessageDelegate :
     }
 
     override fun createViewHolder(parent: ViewGroup): RecyclerView.ViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        return ViewModel(inflater.inflate(R.layout.item_bluetooth_message, parent, false))
+        return ViewModel(parent.inflateViewWithoutAttaching(R.layout.item_bluetooth_message))
     }
 
     @SuppressLint("SetTextI18n")

@@ -15,20 +15,18 @@ import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.snackbar.Snackbar
 import com.milen.bluetoothapp.BuildConfig
-import com.milen.bluetoothapp.Constants.PERMISSION_REQUEST_CODE
 import com.milen.bluetoothapp.R
 import com.milen.bluetoothapp.base.interfaces.OnItemClickListener
 import com.milen.bluetoothapp.base.ui.pager.pages.BasePageFragment
 import com.milen.bluetoothapp.ui.MainActivity
+import com.milen.bluetoothapp.ui.PERMISSION_REQUEST_CODE
 import com.milen.bluetoothapp.ui.adapters.BluetoothDevicesAdapter
-import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter
 import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter.Page.PAGE_PARED_DEVICES
-import kotlinx.android.synthetic.main.fragment_scan_devices_page.*
 import kotlinx.android.synthetic.main.fragment_scan_devices_page.view.*
 
 const val ACTION_DISCOVERY_FAILED = "${BuildConfig.APPLICATION_ID}.ACTION_DISCOVERY_FAILED"
+
 class ScanDevicesPageFragment : BasePageFragment() {
     private lateinit var scanDevicesAdapter: BluetoothDevicesAdapter
 

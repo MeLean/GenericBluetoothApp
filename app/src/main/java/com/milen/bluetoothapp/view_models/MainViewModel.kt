@@ -11,9 +11,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.milen.GenericBluetoothApp
-import com.milen.bluetoothapp.Constants
 import com.milen.bluetoothapp.data.entities.BluetoothMessageEntity
-import com.milen.bluetoothapp.data.sharedPreferences.ApplicationSharedPrefInterface
+import com.milen.bluetoothapp.data.sharedPreferences.ApplicationSharedPreferences
 import com.milen.bluetoothapp.data.sharedPreferences.DefaultApplicationSharedPreferences
 import com.milen.bluetoothapp.services.DeepLinkItemExtractorService
 import com.milen.bluetoothapp.services.MESSAGE_CONNECT_SUCCESS
@@ -22,39 +21,46 @@ import com.milen.bluetoothapp.services.MyBluetoothService
 import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter.Page
 import com.milen.bluetoothapp.utils.EMPTY_STRING
 
+const val AUTO_COMPLETE_SET = "autocomplete_string_set"
+const val UP_VALUE_KEY = "up_value_key"
+const val DOWN_VALUE_KEY = "down_value_key"
+const val LEFT_VALUE_KEY = "left_value_key"
+const val RIGHT_VALUE_KEY = "right_value_key"
+const val SHARED_PREF_NAME = "GenericBluetoothAppSharedPref"
+
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
-    private val mSharedPrefInterface: ApplicationSharedPrefInterface =
+    private val sharedPreferences: ApplicationSharedPreferences =
         initAndroidSharedPreferences(application)
-    private val mDeepLinkService = DeepLinkItemExtractorService()
+    private val deepLinkService = DeepLinkItemExtractorService()
 
-    private val mBluetoothAvailability = MutableLiveData<Boolean?>()
-    private val mCustomCommandsAutoCompleteSet = MutableLiveData<Set<String>>()
-    private val mUpValue = MutableLiveData<String>()
-    private val mDownValue = MutableLiveData<String>()
-    private val mLeftValue = MutableLiveData<String>()
-    private val mRightValue = MutableLiveData<String>()
-    private val mSelectedParedDevice = MutableLiveData<BluetoothDevice?>()
-    private val mFoundDevices = MutableLiveData<MutableSet<BluetoothDevice>>()
-    private val mLastCommand = MutableLiveData<String>()
-    private val mIncomingMessages = MutableLiveData<MutableList<BluetoothMessageEntity>>()
-    private val mShouldScroll = MutableLiveData<Page>()
-    private val mBluetoothPermissionGranted = MutableLiveData<Boolean>()
-    private val mDeepLinkItems = MutableLiveData<Map<String, String>?>()
+    private val bluetoothAvailability = MutableLiveData<Boolean?>()
+    private val customCommandsAutoCompleteSet = MutableLiveData<Set<String>>()
+    private val upValue = MutableLiveData<String>()
+    private val downValue = MutableLiveData<String>()
+    private val leftValue = MutableLiveData<String>()
+    private val rightValue = MutableLiveData<String>()
+    private val selectedParedDevice = MutableLiveData<BluetoothDevice?>()
+    private val foundDevices = MutableLiveData<MutableSet<BluetoothDevice>>()
+    private val lastCommand = MutableLiveData<String>()
+    private val incomingMessages = MutableLiveData<MutableList<BluetoothMessageEntity>>()
+    private val shouldScroll = MutableLiveData<Page>()
+    private val bluetoothPermissionGranted = MutableLiveData<Boolean>()
+    private val deepLinkItems = MutableLiveData<Map<String, String>?>()
 
-    private val mIncomingMsgHandler: Handler = Handler { msg ->
+    private val incomingMsgHandler: Handler = Handler { msg ->
         if(msg.what == MESSAGE_FAIL_CONNECT){
-            mSelectedParedDevice.postValue(null)
+            selectedParedDevice.postValue(null)
         }
 
         if(msg.what == MESSAGE_CONNECT_SUCCESS){
-            mShouldScroll.value = Page.PAGE_REMOTE_CONTROL
+            shouldScroll.value = Page.PAGE_REMOTE_CONTROL
         }
 
         msg.obj?.let {
             if (it is ByteArray) {
                 val msgStr = it.decodeToString()
-                mIncomingMessages.postValue(mIncomingMessages.value?.also{ messages ->
+                incomingMessages.postValue(incomingMessages.value?.also{ messages ->
                     messages.add(BluetoothMessageEntity(msg.what, msgStr, System.currentTimeMillis()))
                 })
 
@@ -64,110 +70,110 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         true
     }
 
-    private val mBluetoothService
-            = MyBluetoothService.getInstance(bluetoothAdapter, mIncomingMsgHandler)
+    private val bluetoothService
+            = MyBluetoothService.getInstance(bluetoothAdapter, incomingMsgHandler)
 
     init {
-        mBluetoothAvailability.value = bluetoothAdapter?.isEnabled
+        bluetoothAvailability.value = bluetoothAdapter?.isEnabled
         setBluetoothAvailability(bluetoothAdapter?.isEnabled == true)
-        mFoundDevices.value = mutableSetOf()
-        mIncomingMessages.value = mutableListOf()
-        mCustomCommandsAutoCompleteSet.value =
-            mSharedPrefInterface.readStringSetOrDefault(Constants.AUTO_COMPLETE_SET)
-        mUpValue.value =
-            mSharedPrefInterface.readStringOrDefault(Constants.UP_VALUE_KEY, EMPTY_STRING)
-        mDownValue.value =
-            mSharedPrefInterface.readStringOrDefault(Constants.DOWN_VALUE_KEY, EMPTY_STRING)
-        mLeftValue.value =
-            mSharedPrefInterface.readStringOrDefault(Constants.LEFT_VALUE_KEY, EMPTY_STRING)
-        mRightValue.value =
-            mSharedPrefInterface.readStringOrDefault(Constants.RIGHT_VALUE_KEY, EMPTY_STRING)
+        foundDevices.value = mutableSetOf()
+        incomingMessages.value = mutableListOf()
+        customCommandsAutoCompleteSet.value =
+            sharedPreferences.readStringSetOrDefault(AUTO_COMPLETE_SET)
+        upValue.value =
+            sharedPreferences.readStringOrDefault(UP_VALUE_KEY, EMPTY_STRING)
+        downValue.value =
+            sharedPreferences.readStringOrDefault(DOWN_VALUE_KEY, EMPTY_STRING)
+        leftValue.value =
+            sharedPreferences.readStringOrDefault(LEFT_VALUE_KEY, EMPTY_STRING)
+        rightValue.value =
+            sharedPreferences.readStringOrDefault(RIGHT_VALUE_KEY, EMPTY_STRING)
     }
 
-    fun getShouldScrollToPage() : LiveData<Page> = mShouldScroll
+    fun getShouldScrollToPage() : LiveData<Page> = shouldScroll
     fun setShouldScrollToPage(page:Page){
-        mShouldScroll.value = page
+        shouldScroll.value = page
     }
 
-    fun getBluetoothAvailability() : LiveData<Boolean?> = mBluetoothAvailability
+    fun getBluetoothAvailability() : LiveData<Boolean?> = bluetoothAvailability
     fun setBluetoothAvailability(isAvailable: Boolean) {
-        mBluetoothAvailability.value = isAvailable
+        bluetoothAvailability.value = isAvailable
 
         when(isAvailable){
-            true -> mBluetoothService.startService()
-            else -> mBluetoothService.stopService()
+            true -> bluetoothService.startService()
+            else -> bluetoothService.stopService()
         }
     }
 
     fun addFoundDevice(foundDevice : BluetoothDevice){
-       mFoundDevices.value = mFoundDevices.value?.also {
+       foundDevices.value = foundDevices.value?.also {
            it.add(foundDevice)
        }
     }
 
     fun getFoundDevice() : LiveData<MutableSet<BluetoothDevice>> =
-        mFoundDevices
+        foundDevices
 
-    fun getCustomCommandsAutoCompleteSet(): LiveData<Set<String>> = mCustomCommandsAutoCompleteSet
+    fun getCustomCommandsAutoCompleteSet(): LiveData<Set<String>> = customCommandsAutoCompleteSet
     fun addCustomCommand(command: String) {
-        mCustomCommandsAutoCompleteSet.value?.let {
+        customCommandsAutoCompleteSet.value?.let {
             if (!it.contains(command)) {
                 val newSet = it.toMutableSet()
                 newSet.add(command)
-                mSharedPrefInterface.storeStringSet(Constants.AUTO_COMPLETE_SET, newSet)
+                sharedPreferences.storeStringSet(AUTO_COMPLETE_SET, newSet)
             }
         }
     }
 
-    fun getIncomingMessages(): LiveData<MutableList<BluetoothMessageEntity>> = mIncomingMessages
+    fun getIncomingMessages(): LiveData<MutableList<BluetoothMessageEntity>> = incomingMessages
 
-    fun getUpValue(): LiveData<String> = mUpValue
-    fun getDownValue(): LiveData<String> = mDownValue
-    fun getLeftValue(): LiveData<String> = mLeftValue
-    fun getRightValue(): LiveData<String> = mRightValue
+    fun getUpValue(): LiveData<String> = upValue
+    fun getDownValue(): LiveData<String> = downValue
+    fun getLeftValue(): LiveData<String> = leftValue
+    fun getRightValue(): LiveData<String> = rightValue
 
-    fun setUpValue(value: String) = mSharedPrefInterface.storeString(Constants.UP_VALUE_KEY, value)
-    fun setDownValue(value: String) = mSharedPrefInterface.storeString(Constants.DOWN_VALUE_KEY, value)
-    fun setLeftValue(value: String) = mSharedPrefInterface.storeString(Constants.LEFT_VALUE_KEY, value)
-    fun setRightValue(value: String) = mSharedPrefInterface.storeString(
-        Constants.RIGHT_VALUE_KEY,
+    fun setUpValue(value: String) = sharedPreferences.storeString(UP_VALUE_KEY, value)
+    fun setDownValue(value: String) = sharedPreferences.storeString(DOWN_VALUE_KEY, value)
+    fun setLeftValue(value: String) = sharedPreferences.storeString(LEFT_VALUE_KEY, value)
+    fun setRightValue(value: String) = sharedPreferences.storeString(
+        RIGHT_VALUE_KEY,
         value
     )
 
 
-    fun getParedBluetoothDevice(): LiveData<BluetoothDevice?> = mSelectedParedDevice
+    fun getParedBluetoothDevice(): LiveData<BluetoothDevice?> = selectedParedDevice
     fun setParedBluetoothDevice(device: BluetoothDevice?) {
         if(device != null) {
-            mBluetoothService.connectToDevice(device)
+            bluetoothService.connectToDevice(device)
         }else{
-            mBluetoothService.disconnectAllDevices()
+            bluetoothService.disconnectAllDevices()
         }
 
-        mSelectedParedDevice.value = device
+        selectedParedDevice.value = device
     }
 
 
-    fun getLastCommand(): LiveData<String> = mLastCommand
+    fun getLastCommand(): LiveData<String> = lastCommand
 
     fun sentCommand(command: String) {
         if (command.isNotBlank()) {
-            mBluetoothService.write(command.toByteArray())
-            mLastCommand.value = command
+            bluetoothService.write(command.toByteArray())
+            lastCommand.value = command
         }
     }
 
-    private fun initAndroidSharedPreferences(application: Application): ApplicationSharedPrefInterface {
+    private fun initAndroidSharedPreferences(application: Application): ApplicationSharedPreferences {
         return DefaultApplicationSharedPreferences(
             application.getSharedPreferences(
-                Constants.SHARED_PREF_NAME,
+                SHARED_PREF_NAME,
                 Context.MODE_PRIVATE
             )
         )
     }
 
-    fun getBluetoothPermissionGranted() : LiveData<Boolean> = mBluetoothPermissionGranted
+    fun getBluetoothPermissionGranted() : LiveData<Boolean> = bluetoothPermissionGranted
     fun setBluetoothPermissionGranted(permissionState: Boolean) {
-        mBluetoothPermissionGranted.value = permissionState
+        bluetoothPermissionGranted.value = permissionState
     }
 
     private fun showIncomingMessage(msg: String) {
@@ -182,26 +188,26 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         super.onCleared()
         //Log.d("TEST_IT", "MainViewModel onCleared")
         setParedBluetoothDevice(null)
-        mBluetoothService.stopService()
+        bluetoothService.stopService()
     }
 
     fun checkIfDeepLinkItemsInIntent(intent: Intent?) {
         if (intent != null && Intent.ACTION_VIEW == intent.action) {
-            mDeepLinkService.extractQueryParams(
+            deepLinkService.extractQueryParams(
                 intent.data,
                 object : DeepLinkItemExtractorService.OnItemsExtracted {
                     override fun onItemsExtracted(items: Map<String, String>?) {
-                        mDeepLinkItems.value = items
+                        deepLinkItems.value = items
                     }
                 }
             )
         } else {
-            mDeepLinkItems.value = null
+            deepLinkItems.value = null
         }
 
     }
 
-    fun getDeepLinkItems(): LiveData<Map<String, String>?> = mDeepLinkItems
+    fun getDeepLinkItems(): LiveData<Map<String, String>?> = deepLinkItems
 
 
 }

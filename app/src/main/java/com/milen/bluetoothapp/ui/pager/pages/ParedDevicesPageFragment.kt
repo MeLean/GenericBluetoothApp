@@ -58,7 +58,7 @@ class ParedDevicesPageFragment : BasePageFragment() {
     }
 
     private fun updateUiForDevice(device: BluetoothDevice?) {
-        bluetoothDevicesAdapter.setChosenDevice(device)
+        bluetoothDevicesAdapter.markDeviceAsChosen(device)
         setTitleToParentActivity(device?.name ?: getString(R.string.app_name))
     }
 
