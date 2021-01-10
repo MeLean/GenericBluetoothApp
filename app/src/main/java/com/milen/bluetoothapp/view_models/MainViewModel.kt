@@ -18,7 +18,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.milen.GenericBluetoothApp
 import com.milen.bluetoothapp.BuildConfig
-import com.milen.bluetoothapp.R
 import com.milen.bluetoothapp.data.entities.BluetoothMessageEntity
 import com.milen.bluetoothapp.data.sharedPreferences.ApplicationSharedPreferences
 import com.milen.bluetoothapp.data.sharedPreferences.DefaultApplicationSharedPreferences
