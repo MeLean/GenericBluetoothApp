@@ -1,16 +1,24 @@
 package com.milen.bluetoothapp.view_models
 
+import android.Manifest
+import android.app.Activity
 import android.app.Application
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Handler
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.milen.GenericBluetoothApp
+import com.milen.bluetoothapp.BuildConfig
+import com.milen.bluetoothapp.R
 import com.milen.bluetoothapp.data.entities.BluetoothMessageEntity
 import com.milen.bluetoothapp.data.sharedPreferences.ApplicationSharedPreferences
 import com.milen.bluetoothapp.data.sharedPreferences.DefaultApplicationSharedPreferences
@@ -18,9 +26,12 @@ import com.milen.bluetoothapp.services.DeepLinkItemExtractorService
 import com.milen.bluetoothapp.services.MESSAGE_CONNECT_SUCCESS
 import com.milen.bluetoothapp.services.MESSAGE_FAIL_CONNECT
 import com.milen.bluetoothapp.services.MyBluetoothService
+import com.milen.bluetoothapp.ui.BLUETOOTH_START_REQUEST_CODE
+import com.milen.bluetoothapp.ui.PERMISSION_REQUEST_CODE
 import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter.Page
 import com.milen.bluetoothapp.utils.EMPTY_STRING
 
+const val ACTION_DISCOVERY_FAILED = "${BuildConfig.APPLICATION_ID}.ACTION_DISCOVERY_FAILED"
 const val AUTO_COMPLETE_SET = "autocomplete_string_set"
 const val UP_VALUE_KEY = "up_value_key"
 const val DOWN_VALUE_KEY = "down_value_key"
@@ -29,6 +40,7 @@ const val RIGHT_VALUE_KEY = "right_value_key"
 const val SHARED_PREF_NAME = "GenericBluetoothAppSharedPref"
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
+    private var denyCount = 0
     val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
     private val sharedPreferences: ApplicationSharedPreferences =
         initAndroidSharedPreferences(application)
@@ -111,8 +123,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
        }
     }
 
-    fun getFoundDevice() : LiveData<MutableSet<BluetoothDevice>> =
-        foundDevices
+    fun getFoundDevice() : LiveData<MutableSet<BluetoothDevice>> = foundDevices
 
     fun getCustomCommandsAutoCompleteSet(): LiveData<Set<String>> = customCommandsAutoCompleteSet
     fun addCustomCommand(command: String) {
@@ -135,23 +146,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun setUpValue(value: String) = sharedPreferences.storeString(UP_VALUE_KEY, value)
     fun setDownValue(value: String) = sharedPreferences.storeString(DOWN_VALUE_KEY, value)
     fun setLeftValue(value: String) = sharedPreferences.storeString(LEFT_VALUE_KEY, value)
-    fun setRightValue(value: String) = sharedPreferences.storeString(
-        RIGHT_VALUE_KEY,
-        value
-    )
-
+    fun setRightValue(value: String) = sharedPreferences.storeString(RIGHT_VALUE_KEY, value)
 
     fun getParedBluetoothDevice(): LiveData<BluetoothDevice?> = selectedParedDevice
     fun setParedBluetoothDevice(device: BluetoothDevice?) {
-        if(device != null) {
+        if (device != null) {
             bluetoothService.connectToDevice(device)
-        }else{
+        } else {
             bluetoothService.disconnectAllDevices()
         }
 
         selectedParedDevice.value = device
     }
-
 
     fun getLastCommand(): LiveData<String> = lastCommand
 
@@ -160,6 +166,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             bluetoothService.write(command.toByteArray())
             lastCommand.value = command
         }
+    }
+
+    private fun showIncomingMessage(msg: String) {
+        Toast.makeText(
+            getApplication<GenericBluetoothApp>().applicationContext,
+            msg,
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     private fun initAndroidSharedPreferences(application: Application): ApplicationSharedPreferences {
@@ -171,22 +185,67 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         )
     }
 
-    fun getBluetoothPermissionGranted() : LiveData<Boolean> = bluetoothPermissionGranted
-    fun setBluetoothPermissionGranted(permissionState: Boolean) {
-        bluetoothPermissionGranted.value = permissionState
+    fun startDiscoveryMode(adapter: BluetoothAdapter, activity: Activity) {
+        adapter.cancelDiscovery()
+        if (!adapter.startDiscovery()) {
+            activity.sendBroadcast(Intent(ACTION_DISCOVERY_FAILED))
+        }
+    }
+    fun getBluetoothPermissionGranted(): LiveData<Boolean> = bluetoothPermissionGranted
+    fun setBluetoothPermissionGranted(isPermissionGranted: Boolean) {
+        bluetoothPermissionGranted.value = isPermissionGranted
     }
 
-    private fun showIncomingMessage(msg: String) {
-        Toast.makeText(
-            getApplication<GenericBluetoothApp>().applicationContext,
-            msg,
-            Toast.LENGTH_SHORT
-        ).show()
+    fun checkBluetoothPermissionGranted(activity: Activity) {
+        bluetoothPermissionGranted.value = isLocationPermissionGranted(activity)
+    }
+
+    fun enableBluetoothIfNot(activity: Activity) {
+        if (bluetoothAdapter?.isEnabled == false && denyCount < 2) {
+            denyCount++
+            startBluetoothOnIntent(activity)
+        }
+    }
+
+    private fun startBluetoothOnIntent(activity: Activity) {
+        activity.startActivityForResult(
+            Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE),
+            BLUETOOTH_START_REQUEST_CODE
+        )
+    }
+
+    private fun isLocationPermissionGranted(activity: Activity): Boolean {
+        return when (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            true -> checkLollipopPermissions(activity)
+            else -> true
+        }
+    }
+
+    fun requestPermissions(permissions: Array<String>, activity: Activity) {
+        ActivityCompat.requestPermissions(
+            activity,
+            permissions,
+            PERMISSION_REQUEST_CODE
+        )
+    }
+
+    private fun checkLollipopPermissions(activity: Activity): Boolean {
+
+        val permissionCoarseLocation = ContextCompat.checkSelfPermission(
+            activity,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+        val permissionFineLocation = ContextCompat.checkSelfPermission(
+            activity,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+
+        return permissionCoarseLocation == PackageManager.PERMISSION_GRANTED &&
+                permissionFineLocation == PackageManager.PERMISSION_GRANTED
     }
 
     override fun onCleared() {
         super.onCleared()
-        //Log.d("TEST_IT", "MainViewModel onCleared")
         setParedBluetoothDevice(null)
         bluetoothService.stopService()
     }
@@ -209,5 +268,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun getDeepLinkItems(): LiveData<Map<String, String>?> = deepLinkItems
 
+    fun makePresentationText(map: Map<String, String>, leadingStr: String): String {
+        return "$leadingStr ${makeStrFromMap(map)}"
+    }
+
+    private fun makeStrFromMap(map: Map<String, String>): String {
+        return map.keys.joinToString {
+            "$it:${map[it]}"
+        }
+    }
 
 }

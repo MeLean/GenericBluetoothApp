@@ -1,7 +1,6 @@
 package com.milen.bluetoothapp.ui
 
 import android.app.Activity
-import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothAdapter.ACTION_DISCOVERY_FINISHED
 import android.bluetooth.BluetoothAdapter.ACTION_DISCOVERY_STARTED
 import android.bluetooth.BluetoothDevice
@@ -23,8 +22,8 @@ import com.milen.bluetoothapp.R
 import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter
 import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter.Page.PAGE_PARED_DEVICES
 import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter.Page.values
-import com.milen.bluetoothapp.ui.pager.pages.ACTION_DISCOVERY_FAILED
 import com.milen.bluetoothapp.utils.EMPTY_STRING
+import com.milen.bluetoothapp.view_models.ACTION_DISCOVERY_FAILED
 import com.milen.bluetoothapp.view_models.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -32,7 +31,7 @@ const val BLUETOOTH_START_REQUEST_CODE = 123
 const val PERMISSION_REQUEST_CODE = 12345
 
 class MainActivity : AppCompatActivity() {
-    private var denyCount = 0
+
     private val viewModel: MainViewModel by viewModels()
 
     private val deviceFoundReceiver = object : BroadcastReceiver() {
@@ -96,11 +95,17 @@ class MainActivity : AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        enableBluetoothIfNot()
+        subscribeForBluetoothAvailability()
 
         initViewPager(values())
 
         manageDeepLinksIfAny(intent)
+    }
+
+    private fun subscribeForBluetoothAvailability() {
+        viewModel.getBluetoothAvailability().observe(this, {
+            viewModel.enableBluetoothIfNot(this)
+        })
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -117,10 +122,7 @@ class MainActivity : AppCompatActivity() {
 
             if (!map.isNullOrEmpty()) {
                 textViewVisibility = VISIBLE
-                val itemsText = map.keys.joinToString {
-                    "$it:${map[it]}"
-                }
-                textViewText = "${getString(R.string.deep_linking_called_text)} $itemsText"
+                textViewText  = viewModel.makePresentationText(map, getString(R.string.deep_linking_called_text))
             }
 
             main_deep_link_text.apply {
@@ -168,24 +170,11 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == BLUETOOTH_START_REQUEST_CODE ) {
-            viewModel.setBluetoothAvailability(resultCode == Activity.RESULT_OK)
-        }
-    }
-
-    private fun enableBluetoothIfNot() {
-        viewModel.getBluetoothAvailability().observe(this, { isAvailable ->
-            if (isAvailable == false && denyCount < 2) {
-                denyCount++
-                startBluetoothOnIntent()
+            when (resultCode) {
+                Activity.RESULT_OK -> viewModel.setBluetoothAvailability(true)
+                else -> viewModel.enableBluetoothIfNot(this)
             }
-        })
-    }
-
-    fun startBluetoothOnIntent() {
-        startActivityForResult(
-            Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE),
-            BLUETOOTH_START_REQUEST_CODE
-        )
+        }
     }
 
     override fun onRequestPermissionsResult(
@@ -196,8 +185,8 @@ class MainActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             PERMISSION_REQUEST_CODE -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    viewModel.setBluetoothPermissionGranted(true)
+                if (grantResults.isNotEmpty()) {
+                    viewModel.setBluetoothPermissionGranted(grantResults[0] == PackageManager.PERMISSION_GRANTED)
                 }
             }
         }
