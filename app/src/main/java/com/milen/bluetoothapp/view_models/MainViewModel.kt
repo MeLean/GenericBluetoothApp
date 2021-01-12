@@ -1,18 +1,13 @@
 package com.milen.bluetoothapp.view_models
 
-import android.Manifest
 import android.app.Activity
 import android.app.Application
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Handler
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -21,12 +16,10 @@ import com.milen.bluetoothapp.BuildConfig
 import com.milen.bluetoothapp.data.entities.BluetoothMessageEntity
 import com.milen.bluetoothapp.data.sharedPreferences.ApplicationSharedPreferences
 import com.milen.bluetoothapp.data.sharedPreferences.DefaultApplicationSharedPreferences
-import com.milen.bluetoothapp.services.DeepLinkItemExtractorService
+import com.milen.bluetoothapp.services.*
 import com.milen.bluetoothapp.services.MESSAGE_CONNECT_SUCCESS
 import com.milen.bluetoothapp.services.MESSAGE_FAIL_CONNECT
-import com.milen.bluetoothapp.services.MyBluetoothService
 import com.milen.bluetoothapp.ui.BLUETOOTH_START_REQUEST_CODE
-import com.milen.bluetoothapp.ui.PERMISSION_REQUEST_CODE
 import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter.Page
 import com.milen.bluetoothapp.utils.EMPTY_STRING
 
@@ -44,6 +37,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val sharedPreferences: ApplicationSharedPreferences =
         initAndroidSharedPreferences(application)
     private val deepLinkService = DeepLinkItemExtractorService()
+    private val permissionSolverService = PermissionSolverService()
 
     private val bluetoothAvailability = MutableLiveData<Boolean?>()
     private val customCommandsAutoCompleteSet = MutableLiveData<Set<String>>()
@@ -121,7 +115,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
            it.add(foundDevice)
        }
     }
-
     fun getFoundDevice() : LiveData<MutableSet<BluetoothDevice>> = foundDevices
 
     fun getCustomCommandsAutoCompleteSet(): LiveData<Set<String>> = customCommandsAutoCompleteSet
@@ -190,13 +183,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             activity.sendBroadcast(Intent(ACTION_DISCOVERY_FAILED))
         }
     }
+
     fun getBluetoothPermissionGranted(): LiveData<Boolean> = bluetoothPermissionGranted
     fun setBluetoothPermissionGranted(isPermissionGranted: Boolean) {
         bluetoothPermissionGranted.value = isPermissionGranted
     }
 
     fun checkBluetoothPermissionGranted(activity: Activity) {
-        bluetoothPermissionGranted.value = isLocationPermissionGranted(activity)
+        bluetoothPermissionGranted.value = permissionSolverService.isLocationPermissionGranted(activity)
     }
 
     fun enableBluetoothIfNot(activity: Activity) {
@@ -213,40 +207,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         )
     }
 
-    private fun isLocationPermissionGranted(activity: Activity): Boolean {
-        return when (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            true -> checkLollipopPermissions(activity)
-            else -> true
-        }
-    }
-
     fun requestPermissions(permissions: Array<String>, activity: Activity) {
-        ActivityCompat.requestPermissions(
-            activity,
-            permissions,
-            PERMISSION_REQUEST_CODE
-        )
-    }
-
-    private fun checkLollipopPermissions(activity: Activity): Boolean {
-
-        val permissionCoarseLocation = ContextCompat.checkSelfPermission(
-            activity,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        )
-        val permissionFineLocation = ContextCompat.checkSelfPermission(
-            activity,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        )
-
-        return permissionCoarseLocation == PackageManager.PERMISSION_GRANTED &&
-                permissionFineLocation == PackageManager.PERMISSION_GRANTED
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        setParedBluetoothDevice(null)
-        bluetoothService.stopService()
+        permissionSolverService.requestPermissions(activity, permissions)
     }
 
     fun checkIfDeepLinkItemsInIntent(intent: Intent?) {
@@ -268,13 +230,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun getDeepLinkItems(): LiveData<Map<String, String>?> = deepLinkItems
 
     fun makePresentationText(map: Map<String, String>, leadingStr: String): String {
-        return "$leadingStr ${makeStrFromMap(map)}"
+        return deepLinkService.makePresentationText(map, leadingStr)
     }
 
-    private fun makeStrFromMap(map: Map<String, String>): String {
-        return map.keys.joinToString {
-            "$it:${map[it]}"
-        }
+    override fun onCleared() {
+        super.onCleared()
+        setParedBluetoothDevice(null)
+        bluetoothService.stopService()
     }
-
 }
