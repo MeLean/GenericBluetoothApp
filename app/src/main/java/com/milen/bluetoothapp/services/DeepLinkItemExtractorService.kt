@@ -16,6 +16,16 @@ class DeepLinkItemExtractorService {
         }
     }
 
+    fun makePresentationText(map: Map<String, String>, leadingStr: String): String {
+        return "$leadingStr ${makeStrFromMap(map)}"
+    }
+
+    private fun makeStrFromMap(map: Map<String, String>): String {
+        return map.keys.joinToString {
+            "$it:${map[it]}"
+        }
+    }
+
     interface OnItemsExtracted{
         fun onItemsExtracted(items: Map<String, String>?)
     }
