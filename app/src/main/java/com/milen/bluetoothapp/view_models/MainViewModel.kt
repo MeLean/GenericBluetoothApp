@@ -1,18 +1,13 @@
 package com.milen.bluetoothapp.view_models
 
-import android.Manifest
 import android.app.Activity
 import android.app.Application
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Handler
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -25,7 +20,6 @@ import com.milen.bluetoothapp.services.*
 import com.milen.bluetoothapp.services.MESSAGE_CONNECT_SUCCESS
 import com.milen.bluetoothapp.services.MESSAGE_FAIL_CONNECT
 import com.milen.bluetoothapp.ui.BLUETOOTH_START_REQUEST_CODE
-import com.milen.bluetoothapp.ui.PERMISSION_REQUEST_CODE
 import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter.Page
 import com.milen.bluetoothapp.utils.EMPTY_STRING
 
