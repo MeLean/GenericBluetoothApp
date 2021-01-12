@@ -276,5 +276,4 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             "$it:${map[it]}"
         }
     }
-
 }
