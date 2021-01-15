@@ -24,7 +24,7 @@ class ScanDevicesPageFragment : BasePageFragment() {
             BluetoothDevicesAdapter(object : OnItemClickListener<BluetoothDevice?> {
                 override fun onItemClick(view: View, selectedItem: BluetoothDevice?) {
                     selectedItem?.let {
-                        viewModel.bluetoothAdapter?.cancelDiscovery()
+                        viewModel.getBluetoothAdapter()?.cancelDiscovery()
                         manageFoundDevicePicked(it)
                     }
                 }
@@ -71,7 +71,7 @@ class ScanDevicesPageFragment : BasePageFragment() {
 
     private fun initClickListeners(view: View) {
         view.scan_devices_fab.setOnClickListener {
-            if (viewModel.bluetoothAdapter?.isEnabled != true) {
+            if (viewModel.getBluetoothAdapter()?.isEnabled != true) {
                 viewModel.enableBluetoothIfNot(requireActivity())
                 return@setOnClickListener
             }
@@ -81,7 +81,7 @@ class ScanDevicesPageFragment : BasePageFragment() {
     }
 
     private fun launchScanning() {
-        viewModel.bluetoothAdapter?.let { adapter ->
+        viewModel.getBluetoothAdapter()?.let { adapter ->
             viewModel.checkBluetoothPermissionGranted(requireActivity())
             viewModel.getBluetoothPermissionGranted().observe(viewLifecycleOwner, { hasPermission ->
                 if (hasPermission) {

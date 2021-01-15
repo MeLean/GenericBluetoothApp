@@ -27,7 +27,7 @@ internal const val NAME = "BluetoothServiceSecure"
 private val MY_UUID: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
 
 class MyBluetoothService private constructor (
-    private val bluetoothAdapter: BluetoothAdapter?,
+    val bluetoothAdapter: BluetoothAdapter?,
     // handler that gets info from Bluetooth service
     private val handler: Handler
 ) {
@@ -49,6 +49,9 @@ class MyBluetoothService private constructor (
     private var acceptThread: AcceptThread? = null
     private var connectThread: ConnectThread? = null
     private var connectedThread: ConnectedThread? = null
+
+    val isAdapterEnabled: Boolean
+        get() = bluetoothAdapter?.isEnabled ?: false
 
     private inner class AcceptThread : Thread() {
         private val serverSocket: BluetoothServerSocket? by lazy(LazyThreadSafetyMode.NONE) {
