@@ -1,6 +1,7 @@
 package com.milen.bluetoothapp.ui
 
 import android.app.Activity
+import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothAdapter.ACTION_DISCOVERY_FINISHED
 import android.bluetooth.BluetoothAdapter.ACTION_DISCOVERY_STARTED
 import android.bluetooth.BluetoothDevice
@@ -11,20 +12,27 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
 import android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.tabs.TabLayoutMediator
+import com.milen.GenericBluetoothApp.Companion.defaultSharedPreferences
 import com.milen.bluetoothapp.R
+import com.milen.bluetoothapp.extensions.showToastMessage
+import com.milen.bluetoothapp.extensions.toDecodedString
+import com.milen.bluetoothapp.services.MESSAGE_CONNECT_SUCCESS
+import com.milen.bluetoothapp.services.MESSAGE_FAIL_CONNECT
+import com.milen.bluetoothapp.services.MyBluetoothService
 import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter
 import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter.Page.PAGE_PARED_DEVICES
 import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter.Page.values
 import com.milen.bluetoothapp.utils.EMPTY_STRING
 import com.milen.bluetoothapp.view_models.ACTION_DISCOVERY_FAILED
 import com.milen.bluetoothapp.view_models.MainViewModel
+import com.milen.bluetoothapp.view_models.MainViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
 
 const val BLUETOOTH_START_REQUEST_CODE = 123
@@ -32,25 +40,21 @@ const val PERMISSION_REQUEST_CODE = 12345
 
 class MainActivity : AppCompatActivity() {
 
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel: MainViewModel by viewModels {
+        MainViewModelFactory(
+            defaultSharedPreferences,
+            MyBluetoothService.getInstance(BluetoothAdapter.getDefaultAdapter(), createHandler()),
+        )
+    }
 
     private val deviceFoundReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
-                ACTION_FOUND -> {
-                    onDeviceFound(intent)
-                }
-
-                ACTION_DISCOVERY_STARTED -> {
-                    showMessage(getString(R.string.device_scanning_start))
-                }
-
-                ACTION_DISCOVERY_FINISHED -> {
-                    showMessage(getString(R.string.device_scanning_finished))
-                }
-
+                ACTION_FOUND -> onDeviceFound(intent)
+                ACTION_DISCOVERY_STARTED -> showToastMessage(getString(R.string.device_scanning_start))
+                ACTION_DISCOVERY_FINISHED -> showToastMessage(getString(R.string.device_scanning_finished))
                 ACTION_DISCOVERY_FAILED -> {
-                    showMessage(getString(R.string.device_scanning_failed))
+                    showToastMessage(getString(R.string.device_scanning_failed))
                     startActivityForResult(Intent(ACTION_LOCATION_SOURCE_SETTINGS), 0)
                 }
             }
@@ -61,7 +65,7 @@ class MainActivity : AppCompatActivity() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
                 BluetoothDevice.ACTION_BOND_STATE_CHANGED -> {
-                    showMessage(getString(R.string.device_bound_changed))
+                    showToastMessage(getString(R.string.device_bound_changed))
 
                     val device: BluetoothDevice? =
                         intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
@@ -71,21 +75,34 @@ class MainActivity : AppCompatActivity() {
                             BluetoothDevice.BOND_BONDED -> {
                                 viewModel.setParedBluetoothDevice(it)
                                 viewModel.setShouldScrollToPage(PAGE_PARED_DEVICES)
-                                showMessage(getString(R.string.device_bound_bonded))
+                                showToastMessage(getString(R.string.device_bound_bonded))
                             }
                             BluetoothDevice.BOND_BONDING -> {
-                                showMessage(getString(R.string.device_bound_bounding))
+                                showToastMessage(getString(R.string.device_bound_bounding))
                             }
                             BluetoothDevice.BOND_NONE -> {
-                                showMessage(getString(R.string.device_bound_none))
+                                showToastMessage(getString(R.string.device_bound_none))
                                 viewModel.setParedBluetoothDevice(null)
                             }
                         }
                     }
-
-
                 }
             }
+        }
+    }
+
+    private fun createHandler(): Handler {
+        return Handler { msg ->
+            when (msg.what) {
+                MESSAGE_FAIL_CONNECT -> viewModel.whenMessageFail()
+                MESSAGE_CONNECT_SUCCESS -> viewModel.whenMessageSuccess()
+            }
+
+            msg.obj?.let {
+                viewModel.handleHandlerMessage(msg.what, it)
+                showToastMessage(it.toDecodedString())
+            }
+            true
         }
     }
 
@@ -160,7 +177,7 @@ class MainActivity : AppCompatActivity() {
                 main_bottom_tab_layout?.getTabAt(page.ordinal)?.select()
             })
 
-            if(viewModel.bluetoothAdapter?.isEnabled == true){
+            if(viewModel.getBluetoothAdapter()?.isEnabled == true){
                 viewModel.setShouldScrollToPage(PAGE_PARED_DEVICES)
             }
         }
@@ -222,8 +239,4 @@ class MainActivity : AppCompatActivity() {
         unregisterReceiver(deviceBoundStateChangedReceiver)
     }
 
-    private fun showMessage(msg: String) {
-        Toast.makeText(applicationContext, msg, Toast.LENGTH_LONG)
-            .show()
-    }
 }

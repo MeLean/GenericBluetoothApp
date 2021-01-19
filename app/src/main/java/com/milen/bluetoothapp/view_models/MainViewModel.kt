@@ -2,28 +2,22 @@ package com.milen.bluetoothapp.view_models
 
 import android.Manifest
 import android.app.Activity
-import android.app.Application
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import android.os.Handler
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.milen.GenericBluetoothApp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.milen.bluetoothapp.BuildConfig
 import com.milen.bluetoothapp.data.entities.BluetoothMessageEntity
 import com.milen.bluetoothapp.data.sharedPreferences.ApplicationSharedPreferences
-import com.milen.bluetoothapp.data.sharedPreferences.DefaultApplicationSharedPreferences
+import com.milen.bluetoothapp.extensions.toDecodedString
 import com.milen.bluetoothapp.services.DeepLinkItemExtractorService
-import com.milen.bluetoothapp.services.MESSAGE_CONNECT_SUCCESS
-import com.milen.bluetoothapp.services.MESSAGE_FAIL_CONNECT
 import com.milen.bluetoothapp.services.MyBluetoothService
 import com.milen.bluetoothapp.ui.BLUETOOTH_START_REQUEST_CODE
 import com.milen.bluetoothapp.ui.PERMISSION_REQUEST_CODE
@@ -38,55 +32,40 @@ const val LEFT_VALUE_KEY = "left_value_key"
 const val RIGHT_VALUE_KEY = "right_value_key"
 const val SHARED_PREF_NAME = "GenericBluetoothAppSharedPref"
 
-class MainViewModel(application: Application) : AndroidViewModel(application) {
+@Suppress("UNCHECKED_CAST")
+class  MainViewModelFactory(
+    private val sharedPreferences: ApplicationSharedPreferences,
+    private val bluetoothService: MyBluetoothService
+): ViewModelProvider.Factory {
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        return MainViewModel(sharedPreferences, bluetoothService) as T
+    }
+}
+
+class MainViewModel(
+    private val sharedPreferences: ApplicationSharedPreferences,
+    private val bluetoothService: MyBluetoothService
+) : ViewModel() {
     private var denyCount = 0
-    val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
-    private val sharedPreferences: ApplicationSharedPreferences =
-        initAndroidSharedPreferences(application)
     private val deepLinkService = DeepLinkItemExtractorService()
 
-    private val bluetoothAvailability = MutableLiveData<Boolean?>()
-    private val customCommandsAutoCompleteSet = MutableLiveData<Set<String>>()
-    private val upValue = MutableLiveData<String>()
-    private val downValue = MutableLiveData<String>()
-    private val leftValue = MutableLiveData<String>()
-    private val rightValue = MutableLiveData<String>()
-    private val selectedParedDevice = MutableLiveData<BluetoothDevice?>()
-    private val foundDevices = MutableLiveData<MutableSet<BluetoothDevice>>()
-    private val lastCommand = MutableLiveData<String>()
-    private val incomingMessages = MutableLiveData<MutableList<BluetoothMessageEntity>>()
-    private val shouldScroll = MutableLiveData<Page>()
-    private val bluetoothPermissionGranted = MutableLiveData<Boolean>()
-    private val deepLinkItems = MutableLiveData<Map<String, String>?>()
-
-    private val incomingMsgHandler: Handler = Handler { msg ->
-        if(msg.what == MESSAGE_FAIL_CONNECT){
-            selectedParedDevice.postValue(null)
-        }
-
-        if(msg.what == MESSAGE_CONNECT_SUCCESS){
-            shouldScroll.value = Page.PAGE_REMOTE_CONTROL
-        }
-
-        msg.obj?.let {
-            if (it is ByteArray) {
-                val msgStr = it.decodeToString()
-                incomingMessages.postValue(incomingMessages.value?.also{ messages ->
-                    messages.add(BluetoothMessageEntity(msg.what, msgStr, System.currentTimeMillis()))
-                })
-
-                showIncomingMessage(msgStr)
-            }
-        }
-        true
-    }
-
-    private val bluetoothService
-            = MyBluetoothService.getInstance(bluetoothAdapter, incomingMsgHandler)
+    val bluetoothAvailability = MutableLiveData<Boolean?>()
+    val customCommandsAutoCompleteSet = MutableLiveData<Set<String>>()
+    val upValue = MutableLiveData<String>()
+    val downValue = MutableLiveData<String>()
+    val leftValue = MutableLiveData<String>()
+    val rightValue = MutableLiveData<String>()
+    val selectedParedDevice = MutableLiveData<BluetoothDevice?>()
+    val foundDevices = MutableLiveData<MutableSet<BluetoothDevice>>()
+    val lastCommand = MutableLiveData<String>()
+    val incomingMessages = MutableLiveData<MutableList<BluetoothMessageEntity>>()
+    val shouldScroll = MutableLiveData<Page>()
+    val bluetoothPermissionGranted = MutableLiveData<Boolean>()
+    val deepLinkItems = MutableLiveData<Map<String, String>?>()
 
     init {
-        bluetoothAvailability.value = bluetoothAdapter?.isEnabled
-        setBluetoothAvailability(bluetoothAdapter?.isEnabled == true)
+        bluetoothAvailability.value = bluetoothService.isAdapterEnabled
+        setBluetoothAvailability(bluetoothService.isAdapterEnabled)
         foundDevices.value = mutableSetOf()
         incomingMessages.value = mutableListOf()
         customCommandsAutoCompleteSet.value =
@@ -148,6 +127,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun setRightValue(value: String) = sharedPreferences.storeString(RIGHT_VALUE_KEY, value)
 
     fun getParedBluetoothDevice(): LiveData<BluetoothDevice?> = selectedParedDevice
+    fun getBluetoothAdapter(): BluetoothAdapter? = bluetoothService.bluetoothAdapter
     fun setParedBluetoothDevice(device: BluetoothDevice?) {
         if (device != null) {
             bluetoothService.connectToDevice(device)
@@ -167,23 +147,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun showIncomingMessage(msg: String) {
-        Toast.makeText(
-            getApplication<GenericBluetoothApp>().applicationContext,
-            msg,
-            Toast.LENGTH_SHORT
-        ).show()
-    }
-
-    private fun initAndroidSharedPreferences(application: Application): ApplicationSharedPreferences {
-        return DefaultApplicationSharedPreferences(
-            application.getSharedPreferences(
-                SHARED_PREF_NAME,
-                Context.MODE_PRIVATE
-            )
-        )
-    }
-
     fun startDiscoveryMode(adapter: BluetoothAdapter, activity: Activity) {
         adapter.cancelDiscovery()
         if (!adapter.startDiscovery()) {
@@ -200,7 +163,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun enableBluetoothIfNot(activity: Activity) {
-        if (bluetoothAdapter?.isEnabled == false && denyCount < 2) {
+        if (!bluetoothService.isAdapterEnabled && denyCount < 2) {
             denyCount++
             startBluetoothOnIntent(activity)
         }
@@ -271,10 +234,25 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return "$leadingStr ${makeStrFromMap(map)}"
     }
 
+    fun whenMessageFail() {
+        selectedParedDevice.postValue(null)
+    }
+
+    fun whenMessageSuccess() {
+        shouldScroll.value = Page.PAGE_REMOTE_CONTROL
+    }
+
+    fun handleHandlerMessage(what: Int, value: Any) {
+        incomingMessages.postValue(incomingMessages.value?.also { messages ->
+            messages.add(BluetoothMessageEntity(what, value.toDecodedString(), System.currentTimeMillis()))
+        })
+    }
+
     private fun makeStrFromMap(map: Map<String, String>): String {
         return map.keys.joinToString {
             "$it:${map[it]}"
         }
     }
+
 
 }

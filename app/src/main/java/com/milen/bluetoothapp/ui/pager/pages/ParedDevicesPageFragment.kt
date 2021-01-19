@@ -29,7 +29,7 @@ class ParedDevicesPageFragment : BasePageFragment() {
     override fun setMenuVisibility(menuVisible: Boolean) {
         super.setMenuVisibility(menuVisible)
         bluetoothDevicesAdapter.setData(
-            viewModel.bluetoothAdapter?.bondedDevices?.toList() ?: listOf()
+            viewModel.getBluetoothAdapter()?.bondedDevices?.toList() ?: listOf()
         )
     }
 
@@ -51,7 +51,7 @@ class ParedDevicesPageFragment : BasePageFragment() {
         recycler?.let {
             it.layoutManager = LinearLayoutManager(requireContext())
             it.setHasFixedSize(true)
-            val devices = viewModel.bluetoothAdapter?.bondedDevices?.toList()
+            val devices = viewModel.getBluetoothAdapter()?.bondedDevices?.toList()
             bluetoothDevicesAdapter.setData(devices ?: listOf())
             it.adapter = bluetoothDevicesAdapter
         }
