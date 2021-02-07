@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothServerSocket
 import android.bluetooth.BluetoothSocket
 import android.os.Handler
+import android.os.ParcelUuid
 import android.util.Log
 import java.io.IOException
 import java.io.InputStream
@@ -24,7 +25,7 @@ internal const val MESSAGE_FAIL_CONNECT: Int = 3
 internal const val MESSAGE_CONNECT_SUCCESS: Int = 4
 
 internal const val NAME = "BluetoothServiceSecure"
-private val MY_UUID: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
+private val MY_UUID: UUID = ParcelUuid.fromString("0000112f-0000-1000-8000-00805f9b34fb").uuid
 
 class MyBluetoothService private constructor (
     val bluetoothAdapter: BluetoothAdapter?,
@@ -97,18 +98,19 @@ class MyBluetoothService private constructor (
     private inner class ConnectThread(device: BluetoothDevice) : Thread() {
 
         private val bluetoothSocket: BluetoothSocket? by lazy(LazyThreadSafetyMode.NONE) {
-            device.createRfcommSocketToServiceRecord(MY_UUID)
+            device.createInsecureRfcommSocketToServiceRecord(MY_UUID)
         }
 
         override fun run() {
             Log.d(TAG, "ConnectThread started")
             // Cancel discovery because it otherwise slows down the connection.
-            bluetoothAdapter?.cancelDiscovery()
+            //bluetoothAdapter?.cancelDiscovery()
 
             bluetoothSocket?.let { socket ->
                 // Connect to the remote device through the socket. This call blocks
                 // until it succeeds or throws an exception.
                 try {
+                    Log.d(TAG, "trying to connect")
                     socket.connect()
                     // The connection attempt succeeded. Perform work associated with
                     // the connection in a separate thread.
