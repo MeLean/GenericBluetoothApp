@@ -50,12 +50,12 @@ class MonitoringPageFragment : BasePageFragment() {
 
     private fun setOnClickListeners(view: View) {
         view.btn_off.setOnClickListener {
-            viewModel.bluetoothAdapter?.disable()
+            viewModel.getBluetoothAdapter()?.disable()
             setAvailability(false)
         }
 
         view.btn_on.setOnClickListener {
-            viewModel.bluetoothAdapter?.enable()
+            viewModel.getBluetoothAdapter()?.enable()
             setAvailability(true)
         }
 

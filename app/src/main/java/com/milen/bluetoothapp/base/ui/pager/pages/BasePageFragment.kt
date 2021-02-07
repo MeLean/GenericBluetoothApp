@@ -24,7 +24,7 @@ abstract class BasePageFragment : Fragment() {
     override fun setMenuVisibility(menuVisible: Boolean) {
         super.setMenuVisibility(menuVisible)
         if(menuVisible){
-            val shouldShowNoBlueTooth = !(viewModel.bluetoothAdapter?.isEnabled == true)
+            val shouldShowNoBlueTooth = !(viewModel.getBluetoothAdapter()?.isEnabled == true)
             view?.no_bluetooth_layout?.shouldShow(shouldShowNoBlueTooth)
         }
     }
