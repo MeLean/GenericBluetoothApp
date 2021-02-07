@@ -98,7 +98,7 @@ class MyBluetoothService private constructor (
     private inner class ConnectThread(device: BluetoothDevice) : Thread() {
 
         private val bluetoothSocket: BluetoothSocket? by lazy(LazyThreadSafetyMode.NONE) {
-            device.createInsecureRfcommSocketToServiceRecord(MY_UUID)
+            device.createRfcommSocketToServiceRecord(MY_UUID)
         }
 
         override fun run() {
