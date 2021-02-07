@@ -86,27 +86,28 @@ class MainViewModel(
             sharedPreferences.readStringOrDefault(RIGHT_VALUE_KEY, EMPTY_STRING)
     }
 
-    fun getShouldScrollToPage() : LiveData<Page> = shouldScroll
-    fun setShouldScrollToPage(page:Page){
+    fun getShouldScrollToPage(): LiveData<Page> = shouldScroll
+    fun setShouldScrollToPage(page: Page) {
         shouldScroll.value = page
     }
 
-    fun getBluetoothAvailability() : LiveData<Boolean?> = bluetoothAvailability
+    fun getBluetoothAvailability(): LiveData<Boolean?> = bluetoothAvailability
     fun setBluetoothAvailability(isAvailable: Boolean) {
         bluetoothAvailability.value = isAvailable
 
-        when(isAvailable){
+        when (isAvailable) {
             true -> bluetoothService.startService()
             else -> bluetoothService.stopService()
         }
     }
 
-    fun addFoundDevice(foundDevice : BluetoothDevice){
-       foundDevices.value = foundDevices.value?.also {
-           it.add(foundDevice)
-       }
+    fun addFoundDevice(foundDevice: BluetoothDevice) {
+        foundDevices.value = foundDevices.value?.also {
+            it.add(foundDevice)
+        }
     }
-    fun getFoundDevice() : LiveData<MutableSet<BluetoothDevice>> = foundDevices
+
+    fun getFoundDevice(): LiveData<MutableSet<BluetoothDevice>> = foundDevices
 
     fun getCustomCommandsAutoCompleteSet(): LiveData<Set<String>> = customCommandsAutoCompleteSet
     fun addCustomCommand(command: String) {
@@ -165,7 +166,8 @@ class MainViewModel(
     }
 
     fun checkBluetoothPermissionGranted(activity: Activity) {
-        bluetoothPermissionGranted.value = permissionSolverService.isLocationPermissionGranted(activity)
+        bluetoothPermissionGranted.value =
+            permissionSolverService.isLocationPermissionGranted(activity)
     }
 
     fun enableBluetoothIfNot(activity: Activity) {
@@ -218,7 +220,13 @@ class MainViewModel(
 
     fun handleHandlerMessage(what: Int, value: Any) {
         incomingMessages.postValue(incomingMessages.value?.also { messages ->
-            messages.add(BluetoothMessageEntity(what, value.toDecodedString(), System.currentTimeMillis()))
+            messages.add(
+                BluetoothMessageEntity(
+                    what,
+                    value.toDecodedString(),
+                    System.currentTimeMillis()
+                )
+            )
         })
     }
 
@@ -226,11 +234,13 @@ class MainViewModel(
         return map.keys.joinToString {
             "$it:${map[it]}"
         }
+    }
+
     override fun onCleared() {
         super.onCleared()
         setParedBluetoothDevice(null)
         bluetoothService.stopService()
     }
-
-
 }
+
+
