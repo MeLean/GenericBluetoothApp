@@ -26,3 +26,4 @@ class GenericBluetoothApp : Application() {
         )
     }
 }
+class GenericBluetoothApp : Application()
