@@ -175,7 +175,7 @@ class MyBluetoothService private constructor (
 
             // Share the sent message with the UI activity.
             val writtenMsg = handler.obtainMessage(
-                MESSAGE_WRITE, -1, -1, bytes
+                MESSAGE_WRITE, bytes.size, -1, bytes
             )
             writtenMsg.sendToTarget()
             outStream.flush()
