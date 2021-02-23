@@ -18,6 +18,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.observe
 import com.google.android.material.tabs.TabLayoutMediator
 import com.milen.GenericBluetoothApp.Companion.defaultSharedPreferences
 import com.milen.bluetoothapp.R
@@ -133,7 +134,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun manageDeepLinksIfAny(intent: Intent?) {
         viewModel.checkIfDeepLinkItemsInIntent(intent)
-        viewModel.getDeepLinkItems().observe(this, { map ->
+        viewModel.getDeepLinkItems().observe(this) { map ->
             var textViewVisibility = GONE
             var textViewText = EMPTY_STRING
 
@@ -146,7 +147,7 @@ class MainActivity : AppCompatActivity() {
                 visibility = textViewVisibility
                 text = textViewText
             }
-        })
+        }
     }
 
     override fun onStart() {
