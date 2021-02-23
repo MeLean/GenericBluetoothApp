@@ -5,7 +5,6 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothServerSocket
 import android.bluetooth.BluetoothSocket
 import android.os.Handler
-import android.os.ParcelUuid
 import android.util.Log
 import java.io.IOException
 import java.io.InputStream
@@ -25,7 +24,8 @@ internal const val MESSAGE_FAIL_CONNECT: Int = 3
 internal const val MESSAGE_CONNECT_SUCCESS: Int = 4
 
 internal const val NAME = "BluetoothServiceSecure"
-private val MY_UUID: UUID = ParcelUuid.fromString("0000112f-0000-1000-8000-00805f9b34fb").uuid
+//private val MY_UUID: UUID = ParcelUuid.fromString("0000112f-0000-1000-8000-00805f9b34fb").uuid
+private val MY_UUID: UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
 
 class MyBluetoothService private constructor (
     val bluetoothAdapter: BluetoothAdapter?,
@@ -97,14 +97,14 @@ class MyBluetoothService private constructor (
 
     private inner class ConnectThread(device: BluetoothDevice) : Thread() {
 
-        private val bluetoothSocket: BluetoothSocket? by lazy(LazyThreadSafetyMode.NONE) {
-            device.createRfcommSocketToServiceRecord(MY_UUID)
-        }
+        private var bluetoothSocket: BluetoothSocket? = device.javaClass.getMethod(
+            "createRfcommSocket", Int::class.javaPrimitiveType
+        ).invoke(device, 1) as BluetoothSocket?
 
         override fun run() {
             Log.d(TAG, "ConnectThread started")
             // Cancel discovery because it otherwise slows down the connection.
-            //bluetoothAdapter?.cancelDiscovery()
+            bluetoothAdapter?.cancelDiscovery()
 
             bluetoothSocket?.let { socket ->
                 // Connect to the remote device through the socket. This call blocks
@@ -156,6 +156,7 @@ class MyBluetoothService private constructor (
                 } catch (e: IOException) {
                     Log.d(TAG, "Input stream was disconnected", e)
                     sendErrorMsg(e)
+                    sentEvent(MESSAGE_FAIL_CONNECT)
                     break
                 }
 
@@ -172,6 +173,7 @@ class MyBluetoothService private constructor (
             } catch (e: IOException) {
                 Log.e(TAG, "Error occurred when sending data: ${String(bytes, Charset.defaultCharset())}", e)
                 sendErrorMsg(e)
+                sentEvent(MESSAGE_FAIL_CONNECT)
                 return
             }
 

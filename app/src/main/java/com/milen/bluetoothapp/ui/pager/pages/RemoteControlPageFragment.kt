@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import androidx.core.widget.addTextChangedListener
+import androidx.lifecycle.observe
 import com.milen.bluetoothapp.R
 import com.milen.bluetoothapp.base.ui.pager.pages.BasePageFragment
 import com.milen.bluetoothapp.utils.EMPTY_STRING
@@ -37,53 +38,39 @@ class RemoteControlPageFragment : BasePageFragment(), View.OnClickListener {
 
 
     private fun initViews(view: View) {
-        viewModel.getLastCommand().observe(viewLifecycleOwner,
-            { command ->
-                view.remote_sent_edit_text.setText(command)
-            }
-        )
+        viewModel.getLastCommand().observe(viewLifecycleOwner) { command ->
+            view.remote_sent_edit_text.setText(command)
+        }
 
-        viewModel.getCustomCommandsAutoCompleteSet().observe(viewLifecycleOwner,
-            { strSet ->
-                val adapter = ArrayAdapter(
-                    requireContext(),
-                    android.R.layout.simple_list_item_1, strSet.toTypedArray()
-                )
-                view.remote_custom_edit_text?.setAdapter(adapter)
-                if(strSet.isNotEmpty()){
-                    view.remote_custom_edit_text.setText(strSet.last())
+        viewModel.getCustomCommandsAutoCompleteSet().observe(viewLifecycleOwner) { strSet ->
+            val adapter = ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_list_item_1, strSet.toTypedArray()
+            )
+            view.remote_custom_edit_text?.setAdapter(adapter)
+            if(strSet.isNotEmpty()){
+                view.remote_custom_edit_text.setText(strSet.last())
+            }
+        }
+
+        viewModel.getUpValue().observe(viewLifecycleOwner) { value -> remote_up_edit_text.setText(value) }
+
+        viewModel.getDownValue().observe(viewLifecycleOwner) { value -> remote_down_edit_text.setText(value) }
+
+        viewModel.getLeftValue().observe(viewLifecycleOwner) { value -> remote_left_edit_text.setText(value) }
+
+        viewModel.getRightValue().observe(viewLifecycleOwner) { value -> remote_right_edit_text.setText(value) }
+
+        viewModel.getParedBluetoothDevice().observe(viewLifecycleOwner) { value ->
+            when (value) {
+                null -> {
+                    view.no_device_text.beVisible()
+                }
+                else -> {
+                    view.no_device_text.beGone()
                 }
             }
-        )
-
-        viewModel.getUpValue().observe(viewLifecycleOwner,
-            { value -> remote_up_edit_text.setText(value) }
-        )
-
-        viewModel.getDownValue().observe(viewLifecycleOwner,
-            { value -> remote_down_edit_text.setText(value) }
-        )
-
-        viewModel.getLeftValue().observe(viewLifecycleOwner,
-            { value -> remote_left_edit_text.setText(value) }
-        )
-
-        viewModel.getRightValue().observe(viewLifecycleOwner,
-            { value -> remote_right_edit_text.setText(value) }
-        )
-
-        viewModel.getParedBluetoothDevice().observe(viewLifecycleOwner,
-            { value ->
-                when (value) {
-                    null -> {
-                        view.no_device_text.beVisible()
-                    }
-                    else -> {
-                        view.no_device_text.beGone()
-                    }
-                }
-            }
-        )
+        }
     }
 
     private fun initOnChangeListeners(view: View) {

@@ -4,13 +4,6 @@ import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import android.os.Handler
-import android.widget.Toast
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,10 +14,7 @@ import com.milen.bluetoothapp.data.sharedPreferences.ApplicationSharedPreference
 import com.milen.bluetoothapp.extensions.toDecodedString
 import com.milen.bluetoothapp.services.DeepLinkItemExtractorService
 import com.milen.bluetoothapp.services.MyBluetoothService
-import com.milen.bluetoothapp.data.sharedPreferences.DefaultApplicationSharedPreferences
 import com.milen.bluetoothapp.services.*
-import com.milen.bluetoothapp.services.MESSAGE_CONNECT_SUCCESS
-import com.milen.bluetoothapp.services.MESSAGE_FAIL_CONNECT
 import com.milen.bluetoothapp.ui.BLUETOOTH_START_REQUEST_CODE
 import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter.Page
 import com.milen.bluetoothapp.utils.EMPTY_STRING
@@ -55,18 +45,18 @@ class MainViewModel(
     private val deepLinkService = DeepLinkItemExtractorService()
     private val permissionSolverService = PermissionSolverService()
 
-    val bluetoothAvailability = MutableLiveData<Boolean?>()
-    val customCommandsAutoCompleteSet = MutableLiveData<Set<String>>()
-    val upValue = MutableLiveData<String>()
-    val downValue = MutableLiveData<String>()
-    val leftValue = MutableLiveData<String>()
-    val rightValue = MutableLiveData<String>()
-    val selectedParedDevice = MutableLiveData<BluetoothDevice?>()
-    val foundDevices = MutableLiveData<MutableSet<BluetoothDevice>>()
-    val lastCommand = MutableLiveData<String>()
-    val incomingMessages = MutableLiveData<MutableList<BluetoothMessageEntity>>()
-    val shouldScroll = MutableLiveData<Page>()
-    val bluetoothPermissionGranted = MutableLiveData<Boolean>()
+    private val bluetoothAvailability = MutableLiveData<Boolean?>()
+    private val customCommandsAutoCompleteSet = MutableLiveData<Set<String>>()
+    private val upValue = MutableLiveData<String>()
+    private val downValue = MutableLiveData<String>()
+    private val leftValue = MutableLiveData<String>()
+    private val rightValue = MutableLiveData<String>()
+    private val selectedParedDevice = MutableLiveData<BluetoothDevice?>()
+    private val foundDevices = MutableLiveData<MutableSet<BluetoothDevice>>()
+    private val lastCommand = MutableLiveData<String>()
+    private val incomingMessages = MutableLiveData<MutableList<BluetoothMessageEntity>>()
+    private val shouldScroll = MutableLiveData<Page>()
+    private val bluetoothPermissionGranted = MutableLiveData<Boolean>()
     val deepLinkItems = MutableLiveData<Map<String, String>?>()
 
     init {
@@ -212,6 +202,7 @@ class MainViewModel(
 
     fun whenMessageFail() {
         selectedParedDevice.postValue(null)
+        shouldScroll.value = Page.PAGE_PARED_DEVICES
     }
 
     fun whenMessageSuccess() {
@@ -228,12 +219,6 @@ class MainViewModel(
                 )
             )
         })
-    }
-
-    private fun makeStrFromMap(map: Map<String, String>): String {
-        return map.keys.joinToString {
-            "$it:${map[it]}"
-        }
     }
 
     override fun onCleared() {
