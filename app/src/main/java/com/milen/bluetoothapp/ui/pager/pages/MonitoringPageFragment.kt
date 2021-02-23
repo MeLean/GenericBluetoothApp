@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.milen.bluetoothapp.R
 import com.milen.bluetoothapp.base.interfaces.OnItemClickListener
@@ -43,9 +44,9 @@ class MonitoringPageFragment : BasePageFragment() {
             it.adapter = bluetoothMessageAdapter
         }
 
-        viewModel.getIncomingMessages().observe(viewLifecycleOwner, {
+        viewModel.getIncomingMessages().observe(viewLifecycleOwner) {
             bluetoothMessageAdapter.setData(it)
-        })
+        }
     }
 
     private fun setOnClickListeners(view: View) {

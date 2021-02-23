@@ -118,6 +118,8 @@ class MyBluetoothService private constructor (
                 } catch (e : Throwable) {
                     Log.e(TAG, "connection failed: ${e.localizedMessage}", e)
                     sentEvent(MESSAGE_FAIL_CONNECT)
+
+                    cancel()
                 }
             }
         }
@@ -178,7 +180,6 @@ class MyBluetoothService private constructor (
                 MESSAGE_WRITE, bytes.size, -1, bytes
             )
             writtenMsg.sendToTarget()
-            outStream.flush()
         }
 
         // Call this method from the main activity to shut down the connection.
