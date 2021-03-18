@@ -27,7 +27,8 @@
         android:weightSum="6"
         app:layout_constraintBottom_toBottomOf="@+id/vgs_scale"
         app:layout_constraintStart_toStartOf="@+id/vgs_scale"
-        app:layout_constraintTop_toTopOf="@+id/vgs_scale">
+        app:layout_constraintTop_toTopOf="@+id/vgs_scale"
+        >
 
         <TextView
             android:layout_width="wrap_content"
@@ -39,7 +40,8 @@
             android:textColor="#9B9898"
             android:gravity="center_vertical|end"
 
-            android:text="100" />
+            android:text="100"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -51,7 +53,8 @@
             android:textColor="#9B9898"
             android:gravity="center_vertical|end"
 
-            android:text="80" />
+            android:text="80"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -63,7 +66,8 @@
             android:textColor="#9B9898"
             android:gravity="center_vertical|end"
 
-            android:text="60" />
+            android:text="60"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -75,7 +79,8 @@
             android:textColor="#9B9898"
             android:gravity="center_vertical|end"
 
-            android:text="40" />
+            android:text="40"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -87,7 +92,8 @@
             android:textColor="#9B9898"
             android:gravity="center_vertical|end"
 
-            android:text="20" />
+            android:text="20"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -99,7 +105,8 @@
             android:textColor="#9B9898"
             android:gravity="center_vertical|end"
 
-            android:text="1" />
+            android:text="1"
+            tools:ignore="HardcodedText" />
     </LinearLayout>
 
     <ImageView

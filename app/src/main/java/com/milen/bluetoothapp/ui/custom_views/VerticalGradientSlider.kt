@@ -64,7 +64,7 @@ class VerticalGradientSlider @JvmOverloads constructor(
 
 
     @SuppressLint("ClickableViewAccessibility")
-    private fun setOnTouchEventListener(view: ImageView?) {
+    private fun setOnTouchEventListener(view: View?) {
         view?.setOnTouchListener(object :
             OnTouchListener {
             private var prevY = 0
