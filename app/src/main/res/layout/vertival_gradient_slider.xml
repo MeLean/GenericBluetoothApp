@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout"
+    >
+
+    <View
+        android:id="@+id/vgs_scale"
+        android:layout_width="20dp"
+        android:layout_height="300dp"
+        android:layout_margin="60dp"
+        android:background="@drawable/vgs_background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+
+        />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:weightSum="6"
+        app:layout_constraintBottom_toBottomOf="@+id/vgs_scale"
+        app:layout_constraintStart_toStartOf="@+id/vgs_scale"
+        app:layout_constraintTop_toTopOf="@+id/vgs_scale">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:paddingStart="40dp"
+            android:paddingEnd="8dp"
+            android:background="@drawable/vgs_underscore"
+            android:textColor="#9B9898"
+            android:gravity="center_vertical|end"
+
+            android:text="100" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:paddingStart="40dp"
+            android:paddingEnd="8dp"
+            android:background="@drawable/vgs_underscore"
+            android:textColor="#9B9898"
+            android:gravity="center_vertical|end"
+
+            android:text="80" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:paddingStart="40dp"
+            android:paddingEnd="8dp"
+            android:background="@drawable/vgs_underscore"
+            android:textColor="#9B9898"
+            android:gravity="center_vertical|end"
+
+            android:text="60" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:paddingStart="40dp"
+            android:paddingEnd="8dp"
+            android:background="@drawable/vgs_underscore"
+            android:textColor="#9B9898"
+            android:gravity="center_vertical|end"
+
+            android:text="40" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:paddingStart="40dp"
+            android:paddingEnd="8dp"
+            android:background="@drawable/vgs_underscore"
+            android:textColor="#9B9898"
+            android:gravity="center_vertical|end"
+
+            android:text="20" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:paddingStart="40dp"
+            android:paddingEnd="8dp"
+            android:background="@drawable/vgs_underscore"
+            android:textColor="#9B9898"
+            android:gravity="center_vertical|end"
+
+            android:text="1" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/vgs_ring"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/vgs_ring"
+        android:elevation="7dp"
+        app:layout_constraintBottom_toBottomOf="@+id/vgs_scale"
+        app:layout_constraintEnd_toEndOf="@+id/vgs_scale"
+        app:layout_constraintStart_toStartOf="@+id/vgs_scale"
+        app:layout_constraintTop_toTopOf="@+id/vgs_scale"
+        app:layout_constraintVertical_bias="0.5"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/vgs_score_num"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/vgs_score_background"
+        android:gravity="center"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/vgs_ring"
+        app:layout_constraintEnd_toStartOf="@+id/vgs_connector"
+        app:layout_constraintTop_toTopOf="@+id/vgs_ring"
+        tools:text="50"
+        />
+
+    <TextView
+        android:id="@+id/vgs_score_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+
+        android:gravity="center"
+        android:text=""
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="20sp"
+        android:textStyle="bold"
+
+        app:layout_constraintEnd_toEndOf="@+id/vgs_score_num"
+        app:layout_constraintStart_toStartOf="@+id/vgs_score_num"
+        app:layout_constraintTop_toBottomOf="@+id/vgs_score_num" />
+
+    <View
+        android:id="@+id/vgs_connector"
+        android:layout_width="50dp"
+        android:layout_height="1dp"
+        android:background="@color/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="@+id/vgs_ring"
+        app:layout_constraintEnd_toStartOf="@+id/vgs_ring"
+        app:layout_constraintTop_toTopOf="@+id/vgs_ring" />
+</merge>

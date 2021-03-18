@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="moods">
+        <item>Dreadful</item>
+        <item>Imbalanced</item>
+        <item>OK</item>
+        <item>Good</item>
+        <item>Balanced</item>
+        <item>Positive</item>
+        <item>Fantastic</item>
+    </string-array>
+</resources>
+
