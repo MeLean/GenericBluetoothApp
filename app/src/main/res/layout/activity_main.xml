@@ -21,6 +21,24 @@
         android:textAlignment="center"
         />
 
+    <com.milen.bluetoothapp.ui.custom_views.VerticalSeekBar
+        android:id="@+id/expositionBar"
+        android:layout_width="10dp"
+        android:layout_height="300dp"
+        android:layout_gravity="end|center_vertical"
+
+        app:button_color="@color/cardview_light_background"
+        app:button_color_pressed="@color/cardview_dark_background"
+        app:button_icon="@drawable/ic_play"
+        app:button_icon_size="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/main_deep_link_text"
+        app:max_value="100"
+        app:min_value="-100"
+        app:stroke_color="@color/cardview_dark_background"
+        app:stroke_width="1dp" />
+
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/main_view_pager"
         android:layout_width="0dp"
@@ -28,7 +46,7 @@
         app:layout_constraintBottom_toTopOf="@+id/main_bottom_tab_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/main_deep_link_text" />
+        app:layout_constraintTop_toBottomOf="@+id/expositionBar" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/main_bottom_tab_layout"
