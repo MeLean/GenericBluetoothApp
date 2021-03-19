@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
+
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout"
     >
 
@@ -12,13 +13,12 @@
         android:id="@+id/vgs_scale"
         android:layout_width="20dp"
         android:layout_height="300dp"
-        android:layout_margin="60dp"
+        android:layout_margin="20dp"
         android:background="@drawable/vgs_background"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -31,80 +31,32 @@
         >
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:paddingStart="40dp"
-            android:paddingEnd="8dp"
-            android:background="@drawable/vgs_underscore"
-            android:textColor="#9B9898"
-            android:gravity="center_vertical|end"
-
+            style="@style/VgsGridItem"
             android:text="100"
             tools:ignore="HardcodedText" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:paddingStart="40dp"
-            android:paddingEnd="8dp"
-            android:background="@drawable/vgs_underscore"
-            android:textColor="#9B9898"
-            android:gravity="center_vertical|end"
-
+            style="@style/VgsGridItem"
             android:text="80"
             tools:ignore="HardcodedText" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:paddingStart="40dp"
-            android:paddingEnd="8dp"
-            android:background="@drawable/vgs_underscore"
-            android:textColor="#9B9898"
-            android:gravity="center_vertical|end"
-
+            style="@style/VgsGridItem"
             android:text="60"
             tools:ignore="HardcodedText" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:paddingStart="40dp"
-            android:paddingEnd="8dp"
-            android:background="@drawable/vgs_underscore"
-            android:textColor="#9B9898"
-            android:gravity="center_vertical|end"
-
+            style="@style/VgsGridItem"
             android:text="40"
             tools:ignore="HardcodedText" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:paddingStart="40dp"
-            android:paddingEnd="8dp"
-            android:background="@drawable/vgs_underscore"
-            android:textColor="#9B9898"
-            android:gravity="center_vertical|end"
-
+            style="@style/VgsGridItem"
             android:text="20"
             tools:ignore="HardcodedText" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:paddingStart="40dp"
-            android:paddingEnd="8dp"
-            android:background="@drawable/vgs_underscore"
-            android:textColor="#9B9898"
-            android:gravity="center_vertical|end"
-
+            style="@style/VgsGridItem"
             android:text="1"
             tools:ignore="HardcodedText" />
     </LinearLayout>
