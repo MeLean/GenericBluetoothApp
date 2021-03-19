@@ -11,14 +11,18 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.graphics.Point
 import android.os.Bundle
 import android.os.Handler
 import android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
+import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.observe
+import com.google.android.material.shape.CornerFamily
+import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.tabs.TabLayoutMediator
 import com.milen.GenericBluetoothApp.Companion.defaultSharedPreferences
 import com.milen.bluetoothapp.R
@@ -118,6 +122,26 @@ class MainActivity : AppCompatActivity() {
         initViewPager(values())
 
         manageDeepLinksIfAny(intent)
+
+        //Corner radius
+        val radius = resources.getDimension(R.dimen.default_corner_radius)
+        val bottomBarBackground = bottomAppBar.background as MaterialShapeDrawable
+        bottomBarBackground.shapeAppearanceModel = bottomBarBackground.shapeAppearanceModel
+            .toBuilder()
+            .setTopRightCorner(CornerFamily.ROUNDED, radius)
+            .setTopLeftCorner(CornerFamily.ROUNDED, radius)
+            .setBottomLeftCorner(CornerFamily.ROUNDED, radius)
+            .setBottomRightCorner(CornerFamily.ROUNDED, radius)
+            .build()
+
+        val point = Point()
+        nested_view.viewTreeObserver.addOnScrollChangedListener {
+            windowManager.defaultDisplay.getSize(point)
+            when {
+                bottomAppBar.y + bottomAppBar.measuredHeight > point.y -> fab.alpha = 0.0f
+                else ->  fab.alpha = 1.0f
+            }
+        }
     }
 
     private fun subscribeForBluetoothAvailability() {
@@ -142,11 +166,6 @@ class MainActivity : AppCompatActivity() {
                 textViewVisibility = VISIBLE
                 textViewText  = viewModel.makePresentationText(map, getString(R.string.deep_linking_called_text))
             }
-
-            main_deep_link_text.apply {
-                visibility = textViewVisibility
-                text = textViewText
-            }
         }
     }
 
@@ -166,22 +185,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initViewPager(pages: Array<MainFragmentStateAdapter.Page>) {
-        main_view_pager?.let { viewPager ->
-            val viewPagerAdapter = MainFragmentStateAdapter(this, pages)
-            viewPager.adapter = viewPagerAdapter
 
-            TabLayoutMediator(main_bottom_tab_layout, main_view_pager) { tab, position ->
-                tab.setText(viewPagerAdapter.getStringResIdByPage(pages[position]))
-            }.attach()
-
-            viewModel.getShouldScrollToPage().observe(this, { page ->
-                main_bottom_tab_layout?.getTabAt(page.ordinal)?.select()
-            })
-
-            if(viewModel.getBluetoothAdapter()?.isEnabled == true){
-                viewModel.setShouldScrollToPage(PAGE_PARED_DEVICES)
-            }
-        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/home"
+        android:title="Home"
+        android:icon="@drawable/bnv_home"
+        />
+    <item
+        android:id="@+id/stats"
+        android:title="Stats"
+        android:icon="@drawable/bnv_stats"
+        />
+    <item
+        android:id="@+id/none"
+        android:title=""
+        android:enabled="false"
+        />
+    <item
+        android:id="@+id/courses"
+        android:title="Courses"
+        android:icon="@drawable/bnv_courses"
+        />
+    <item
+        android:id="@+id/profile"
+        android:title="Profile"
+        android:icon="@drawable/bnv_profile"
+        />
+</menu>
