@@ -26,23 +26,186 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 app:layout_anchor="@+id/verticalBar"
-                app:layout_anchorGravity="center" />
+                app:layout_anchorGravity="center"
+                android:visibility="gone"
+                />
 
-            <com.milen.bluetoothapp.ui.custom_views.VerticalGradientSlider
-                android:id="@+id/verticalBar1"
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:progress="50"
+                android:layout_gravity="center"
+                app:indicatorColor="@color/sky"
+                app:trackColor="@color/colorBlueLightApp"
+                app:indicatorSize="120dp"
+                app:indicatorDirectionCircular="clockwise"
+                app:indicatorInset="20dp"
+                app:trackCornerRadius="5dp"
+                app:trackThickness="10dp"
+                />
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                app:layout_anchor="@+id/verticalBar"
-                app:layout_anchorGravity="center" />
+                tools:itemCount="4"
+                tools:listitem="@layout/medical_condition_item_layout"
+                tools:orientation="horizontal"
+                android:visibility="gone"
+                />
 
-            <com.milen.bluetoothapp.ui.custom_views.VerticalGradientSlider
-                android:id="@+id/verticalBar2"
-                android:layout_width="match_parent"
+<!--            <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content">-->
+<!--                <TextView-->
+<!--                    android:id="@+id/some1"-->
+<!--                    android:text="IBDU"-->
+<!--                    style="@style/ConditionItem"-->
+<!--                    />-->
+
+<!--                <TextView-->
+<!--                    android:id="@+id/some2"-->
+<!--                    android:text="Ulcerative Colitis"-->
+<!--                    style="@style/ConditionItem"-->
+<!--                    />-->
+
+<!--                <TextView-->
+<!--                    android:id="@+id/some3"-->
+<!--                    android:text="Crohn’s Disease"-->
+<!--                    style="@style/ConditionItem"-->
+<!--                    />-->
+
+<!--                <TextView-->
+<!--                    android:id="@+id/some4"-->
+<!--                    android:text="Pouchitis"-->
+<!--                    style="@style/ConditionItem"-->
+<!--                    />-->
+
+<!--                <TextView-->
+<!--                    android:id="@+id/some5"-->
+<!--                    android:text="Celiac"-->
+<!--                    style="@style/ConditionItem"-->
+<!--                    />-->
+
+<!--                <TextView-->
+<!--                    android:id="@+id/some6"-->
+<!--                    android:text="Microscoptic Colitis"-->
+<!--                    style="@style/ConditionItem"-->
+
+<!--                    />-->
+
+<!--                <TextView-->
+<!--                    android:id="@+id/some7"-->
+<!--                    android:text="Not yet diagnosed"-->
+<!--                    style="@style/ConditionItem"-->
+<!--                    />-->
+
+
+<!--                <androidx.constraintlayout.helper.widget.Flow-->
+<!--                    android:id="@+id/flow"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:padding="16dp"-->
+<!--                    app:constraint_referenced_ids="some1,some2,some3,some4,some5,some6,some7"-->
+<!--                    app:flow_firstVerticalBias="0"-->
+<!--                    app:flow_horizontalAlign="start"-->
+<!--                    app:flow_horizontalBias="0"-->
+<!--                    app:flow_horizontalGap="16dp"-->
+<!--                    app:flow_horizontalStyle="packed"-->
+<!--                    app:flow_maxElementsWrap="2"-->
+<!--                    app:flow_verticalBias="0"-->
+<!--                    app:flow_verticalGap="16dp"-->
+<!--                    app:flow_wrapMode="chain"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="parent" />-->
+
+<!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+            <com.milen.bluetoothapp.ui.custom_views.FlowView
+                android:id="@+id/flowView"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                app:layout_anchor="@+id/verticalBar"
-                app:layout_anchorGravity="center" />
+                />
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:text="TEST BUTTON"
+                android:layout_margin="16dp"
+                android:onClick="buttonClicked"
+                />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:text="TEST BUTTON"
+                android:layout_margin="16dp"
+                android:onClick="buttonClicked"
+                />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:text="TEST BUTTON"
+                android:layout_margin="16dp"
+                android:onClick="buttonClicked"
+                />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:text="TEST BUTTON"
+                android:layout_margin="16dp"
+                android:onClick="buttonClicked"
+                />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:text="TEST BUTTON"
+                android:layout_margin="16dp"
+                android:onClick="buttonClicked"
+                />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_margin="16dp"
+                android:onClick="buttonClicked"
+                android:text="TEST BUTTON" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:text="TEST BUTTON"
+                android:layout_margin="16dp"
+                android:onClick="buttonClicked"
+                />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:text="TEST BUTTON"
+                android:layout_margin="16dp"
+                android:onClick="buttonClicked"
+                />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:text="TEST BUTTON"
+                android:layout_margin="16dp"
+                android:onClick="buttonClicked"
+                />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:text="TEST BUTTON"
+                android:layout_margin="16dp"
+                android:onClick="buttonClicked"
+                />
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
@@ -60,8 +223,8 @@
         app:backgroundTint="@color/colorWhite"
         android:requiresFadingEdge="vertical"
         app:fabCradleRoundedCornerRadius="16dp"
-        app:fabCradleMargin="16dp"
-        app:fabCradleVerticalOffset="16dp"
+        app:fabCradleMargin="8dp"
+        app:fabCradleVerticalOffset="0dp"
         app:hideOnScroll="true"
         >
         <com.google.android.material.bottomnavigation.BottomNavigationView

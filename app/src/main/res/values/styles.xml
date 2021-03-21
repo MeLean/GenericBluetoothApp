@@ -66,4 +66,15 @@
         <item name="android:gravity">center_vertical|end</item>
     </style>
 
+    <style name="ConditionItem">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/fw_primary_whit_color_selector</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:background">@drawable/fw_rounded_primary_stroked_filled_selector</item>
+        <item name="android:letterSpacing">0.2</item>
+    </style>
+
 </resources>

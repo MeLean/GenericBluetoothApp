@@ -1,5 +1,6 @@
 package com.milen.bluetoothapp.ui
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothAdapter.ACTION_DISCOVERY_FINISHED
@@ -15,26 +16,25 @@ import android.graphics.Point
 import android.os.Bundle
 import android.os.Handler
 import android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
-import android.util.Log
-import android.view.View.GONE
-import android.view.View.VISIBLE
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.observe
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.MaterialShapeDrawable
-import com.google.android.material.tabs.TabLayoutMediator
+import com.google.android.material.snackbar.Snackbar
 import com.milen.GenericBluetoothApp.Companion.defaultSharedPreferences
 import com.milen.bluetoothapp.R
+import com.milen.bluetoothapp.data.entities.ConditionNames
 import com.milen.bluetoothapp.extensions.showToastMessage
 import com.milen.bluetoothapp.extensions.toDecodedString
 import com.milen.bluetoothapp.services.MESSAGE_CONNECT_SUCCESS
 import com.milen.bluetoothapp.services.MESSAGE_FAIL_CONNECT
 import com.milen.bluetoothapp.services.MyBluetoothService
-import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter
+import com.milen.bluetoothapp.ui.adapters.MedicalConditionsRecyclerAdapter
+import com.milen.bluetoothapp.ui.custom_views.FlowView
 import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter.Page.PAGE_PARED_DEVICES
-import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter.Page.values
-import com.milen.bluetoothapp.utils.EMPTY_STRING
 import com.milen.bluetoothapp.view_models.ACTION_DISCOVERY_FAILED
 import com.milen.bluetoothapp.view_models.MainViewModel
 import com.milen.bluetoothapp.view_models.MainViewModelFactory
@@ -111,17 +111,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        subscribeForBluetoothAvailability()
-
-        initViewPager(values())
-
-        manageDeepLinksIfAny(intent)
 
         //Corner radius
         val radius = resources.getDimension(R.dimen.default_corner_radius)
@@ -134,39 +129,76 @@ class MainActivity : AppCompatActivity() {
             .setBottomRightCorner(CornerFamily.ROUNDED, radius)
             .build()
 
+        fab.setOnClickListener {
+            if (it.alpha > 0.0f) {
+                Snackbar.make(it, "Yeeeaay", Snackbar.LENGTH_LONG).show()
+            }
+        }
+
         val point = Point()
+        val startSize = fab.customSize
         nested_view.viewTreeObserver.addOnScrollChangedListener {
             windowManager.defaultDisplay.getSize(point)
             when {
-                bottomAppBar.y + bottomAppBar.measuredHeight > point.y -> fab.alpha = 0.0f
-                else ->  fab.alpha = 1.0f
+                bottomAppBar.y + bottomAppBar.measuredHeight > point.y -> {
+                    fab.customSize = 1; fab.alpha = 0.0f
+                }
+                else -> {
+                    fab.customSize = startSize; fab.alpha = 1f
+                }
             }
         }
-    }
 
-    private fun subscribeForBluetoothAvailability() {
-        viewModel.getBluetoothAvailability().observe(this, {
-            viewModel.enableBluetoothIfNot(this)
+        recycler.layoutManager = LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
+        recycler.adapter = MedicalConditionsRecyclerAdapter(
+            listOf(
+                ConditionNames("1", "IBDU"),
+                ConditionNames("2", "Ulcerative Colitis"),
+                ConditionNames("3", "Crohn’s Disease"),
+                ConditionNames("3", "Pouchitis"),
+                ConditionNames("3", "Celiac"),
+                ConditionNames("3", "Microscoptic Colitis"),
+                ConditionNames("3", "Not yet diagnosed")
+            )
+        )
+
+        flowView.setItems(
+            listOf(
+                ConditionNames("1", "IBDU"),
+                ConditionNames("2", "Ulcerative Colitis"),
+                ConditionNames("3", "Crohn’s Disease"),
+                ConditionNames("4", "Pouchitis"),
+                ConditionNames("5", "Celiac"),
+                ConditionNames("6", "Microscoptic Colitis"),
+                ConditionNames("7", "Not yet diagnosed")
+            )
+        )
+
+        flowView.setFlowViewOnClickListener(object: FlowView.OnFlowViewItemClickListener{
+            override fun onItemClicked(item: ConditionNames) {
+                Snackbar.make(
+                    this@MainActivity,
+                    flowView,
+                    "chosen:  ${item.name ?: "NO NAME"}",
+                    Snackbar.LENGTH_LONG
+                ).show()
+            }
         })
+
+
+
+
+//        flowView.setItems(
+//            listOf(
+//                ConditionNames("1", "IBAAAA GO")
+//            )
+//        )
+
     }
 
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        manageDeepLinksIfAny(intent)
 
-    }
-
-    private fun manageDeepLinksIfAny(intent: Intent?) {
-        viewModel.checkIfDeepLinkItemsInIntent(intent)
-        viewModel.getDeepLinkItems().observe(this) { map ->
-            var textViewVisibility = GONE
-            var textViewText = EMPTY_STRING
-
-            if (!map.isNullOrEmpty()) {
-                textViewVisibility = VISIBLE
-                textViewText  = viewModel.makePresentationText(map, getString(R.string.deep_linking_called_text))
-            }
-        }
+    fun buttonClicked(v: View) {
+        Snackbar.make(v, "WORKED", Snackbar.LENGTH_LONG).show()
     }
 
     override fun onStart() {
@@ -182,10 +214,6 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         finish()
         return true
-    }
-
-    private fun initViewPager(pages: Array<MainFragmentStateAdapter.Page>) {
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
