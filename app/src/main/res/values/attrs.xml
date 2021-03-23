@@ -13,4 +13,16 @@
         <attr name="min_value" format="float" />
         <attr name="max_value" format="float" />
     </declare-styleable>
+
+    <declare-styleable name="CustomTextInput">
+        <attr name="cti_hint" format="reference|string" />
+        <attr name="cti_left_icon" format="reference" />
+        <attr name="cti_right_icon" format="reference" />
+        <attr name="cti_mode" format="enum">
+            <enum name="cti_default" value="0"/>
+            <enum name="cti_valid" value="1"/>
+            <enum name="cti_error" value="2"/>
+        </attr>
+    </declare-styleable>
+
 </resources>

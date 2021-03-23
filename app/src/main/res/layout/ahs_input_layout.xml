@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp"
+    android:layout_margin="8dp"
+
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout"
     >
 
@@ -17,7 +18,7 @@
         >
 
         <ImageView
-            android:id="@+id/start_img"
+            android:id="@+id/left_img"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:scaleType="centerCrop"
@@ -27,8 +28,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/input_layout"
             tools:ignore="ContentDescription"
-            tools:src="@drawable/bnv_profile"
-            />
+            tools:src="@drawable/bnv_profile" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/input_layout"
@@ -36,12 +36,14 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
             android:background="@android:color/transparent"
+            app:boxStrokeWidth="0dp"
+            app:boxStrokeWidthFocused="0dp"
             app:hintAnimationEnabled="true"
-            app:hintTextColor="@color/green_hint"
-            app:layout_constraintEnd_toStartOf="@+id/end_img"
-            app:layout_constraintStart_toEndOf="@+id/start_img"
+            app:hintTextAppearance="@style/DefaultCustomTextInputHint"
+            app:layout_constraintEnd_toStartOf="@+id/right_img"
+            app:layout_constraintStart_toEndOf="@+id/left_img"
             app:layout_constraintTop_toTopOf="parent"
-            tools:hint="@string/app_name"
+            tools:hint="some hint"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -54,13 +56,11 @@
                 android:imeOptions="actionDone"
                 android:inputType="text"
                 android:textColorHint="@color/green_hint"
-                android:textIsSelectable="true"
-                android:text="@string/app_name"
                 />
         </com.google.android.material.textfield.TextInputLayout>
 
         <ImageView
-            android:id="@+id/end_img"
+            android:id="@+id/right_img"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:scaleType="centerCrop"
@@ -70,7 +70,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/input_layout"
             tools:ignore="ContentDescription"
-            tools:src="@drawable/bnv_stats" />
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

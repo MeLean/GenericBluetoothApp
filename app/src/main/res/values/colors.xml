@@ -12,4 +12,8 @@
     <color name="green">#00BA88</color>
     <color name="green_hint">#00805D</color>
     <color name="light_transparent_green">#2200BA88</color>
+    <color name="red_hint">#ED2E7E</color>
+    <color name="light_transparent_red">#22ED2E7E</color>
+    <color name="gray_hint">#9B9898</color>
+    <color name="light_gray">#F2F0F0</color>
 </resources>

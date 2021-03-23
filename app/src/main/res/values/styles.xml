@@ -77,4 +77,13 @@
         <item name="android:letterSpacing">0.2</item>
     </style>
 
+    <style name="DefaultCustomTextInputHint" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="android:textSize">14sp</item>
+        <item name="background">@android:color/transparent</item>
+        <item name="hintTextColor">@color/cti_gray_hint</item>
+        <!-- The color of the label in all other text field states (such as resting and disabled) -->
+        <item name="android:textColorHint">@color/cti_gray_hint</item>
+    </style>
+
+    <!--        <item name="android:fontFamily">@font/lato_regular</item>-->
 </resources>

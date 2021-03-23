@@ -1,6 +1,5 @@
 package com.milen.bluetoothapp.ui
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothAdapter.ACTION_DISCOVERY_FINISHED
@@ -16,13 +15,11 @@ import android.graphics.Point
 import android.os.Bundle
 import android.os.Handler
 import android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
-import android.view.MotionEvent
 import android.view.View
+import android.view.ViewAnimationUtils
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.snackbar.Snackbar
@@ -34,7 +31,7 @@ import com.milen.bluetoothapp.extensions.toDecodedString
 import com.milen.bluetoothapp.services.MESSAGE_CONNECT_SUCCESS
 import com.milen.bluetoothapp.services.MESSAGE_FAIL_CONNECT
 import com.milen.bluetoothapp.services.MyBluetoothService
-import com.milen.bluetoothapp.ui.adapters.MedicalConditionsRecyclerAdapter
+import com.milen.bluetoothapp.ui.custom_views.CustomTextInput
 import com.milen.bluetoothapp.ui.custom_views.FlowView
 import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter.Page.PAGE_PARED_DEVICES
 import com.milen.bluetoothapp.utils.beGone
@@ -43,6 +40,9 @@ import com.milen.bluetoothapp.view_models.ACTION_DISCOVERY_FAILED
 import com.milen.bluetoothapp.view_models.MainViewModel
 import com.milen.bluetoothapp.view_models.MainViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlin.math.max
+import kotlin.math.roundToInt
+
 
 const val BLUETOOTH_START_REQUEST_CODE = 123
 const val PERMISSION_REQUEST_CODE = 12345
@@ -122,7 +122,7 @@ class MainActivity : AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        //Corner radius
+        //Corner radius to bottom nav barr
         val radius = resources.getDimension(R.dimen.default_corner_radius)
         val bottomBarBackground = bottomAppBar.background as MaterialShapeDrawable
         bottomBarBackground.shapeAppearanceModel = bottomBarBackground.shapeAppearanceModel
@@ -133,15 +133,21 @@ class MainActivity : AppCompatActivity() {
             .setBottomRightCorner(CornerFamily.ROUNDED, radius)
             .build()
 
+        //show more buttons layout animated
         fab.setOnClickListener {
             if (it.alpha > 0.0f) {
+                val centreX= (it.x + it.width / 2).roundToInt()
+                val centreY= (it.y + it.height / 2).roundToInt()
                 when {
-                    more_buttons_layout.isVisible -> more_buttons_layout.beGone()
-                    else -> more_buttons_layout.beVisible()
+                    more_buttons_layout.isVisible ->
+                        more_buttons_layout.animateCircularHide(centreX, centreY)
+
+                    else -> more_buttons_layout.animateCircularReveal(centreX, centreY)
                 }
             }
         }
 
+        //hide FAB on Bottom bar scrolled
         val point = Point()
         val startSize = fab.customSize
         nested_view.viewTreeObserver.addOnScrollChangedListener {
@@ -156,6 +162,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        //Int FlowView
         flowView.setItems(
             listOf(
                 ConditionNames("1", "IBDU"),
@@ -179,11 +186,14 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-    }
+        //Playing around with custom views
+        custom_valid.setText("yeaaaa!")
+        custom_valid.setHintRes(R.string.click_to_scan_for_devices)
+        custom_valid.showResultMessage(CustomTextInput.MODE.CTI_VALID, "BRAVO!", R.drawable.cti_circular_tick)
 
+        custom_default.setText("ohoooo!")
 
-    fun buttonClicked(v: View) {
-        Snackbar.make(v, "WORKED", Snackbar.LENGTH_LONG).show()
+        custom_error.showResultMessage(CustomTextInput.MODE.CTI_ERROR, "Error", R.drawable.cti_error_x)
     }
 
     override fun onStart() {
@@ -257,4 +267,23 @@ class MainActivity : AppCompatActivity() {
         unregisterReceiver(deviceBoundStateChangedReceiver)
     }
 
+}
+
+
+fun View.animateCircularReveal(x : Int = 0, y : Int = 0) {
+    val finalRadius = max(this.width, this.height).toFloat()
+    val circularReveal =
+        ViewAnimationUtils.createCircularReveal(this, x,  y, 0f, finalRadius * 1.1f)
+    circularReveal.duration = 300
+    circularReveal.start()
+    this.visibility = View.VISIBLE
+}
+
+fun View.animateCircularHide(x : Int = 0, y : Int = 0) {
+    val startRadius = max(this.width, this.height).toFloat()
+    val circularHide =
+        ViewAnimationUtils.createCircularReveal(this, x, y, startRadius, 0.0f)
+    circularHide.duration = 300
+    circularHide.start()
+    this.visibility = View.GONE
 }

@@ -27,10 +27,48 @@
                 android:visibility="visible"
                 />
 
+            <com.milen.bluetoothapp.ui.custom_views.CustomTextInput
+                android:id="@+id/custom_default"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                app:cti_hint="CUSTOM SHITS"
+                app:cti_mode="cti_default"
+                />
+
+            <com.milen.bluetoothapp.ui.custom_views.CustomTextInput
+                android:id="@+id/custom_valid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                app:cti_hint="@string/app_name"
+                app:cti_left_icon="@drawable/bnv_profile"
+                app:cti_right_icon="@drawable/cti_circular_tick"
+                app:cti_mode="cti_valid"
+                />
+
+            <com.milen.bluetoothapp.ui.custom_views.CustomTextInput
+                android:id="@+id/custom_error"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                app:cti_hint="@string/app_name"
+                app:cti_left_icon="@drawable/bnv_profile"
+                app:cti_right_icon="@drawable/cti_circular_tick"
+                app:cti_mode="cti_error"
+                />
+
+<!--            <com.milen.bluetoothapp.ui.custom_views.CustomTextInput-->
+<!--                android:id="@+id/custom2"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                />-->
+
             <com.milen.bluetoothapp.ui.custom_views.FlowView
                 android:id="@+id/flowView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
                 android:visibility="visible" />
 
             <com.google.android.material.progressindicator.CircularProgressIndicator
