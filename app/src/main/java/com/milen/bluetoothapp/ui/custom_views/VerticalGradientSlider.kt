@@ -1,12 +1,11 @@
 package com.milen.bluetoothapp.ui.custom_views
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.milen.bluetoothapp.R
 import kotlinx.android.synthetic.main.vertival_gradient_slider.view.*
@@ -62,31 +61,32 @@ class VerticalGradientSlider @JvmOverloads constructor(
         return moods[roundInt]
     }
 
-
-    @SuppressLint("ClickableViewAccessibility")
     private fun setOnTouchEventListener(view: View?) {
         view?.setOnTouchListener(object :
             OnTouchListener {
             private var prevY = 0
             override fun onTouch(v: View, event: MotionEvent): Boolean {
-                val par = v.constraintLayoutParams()
+                parent.requestDisallowInterceptTouchEvent(true)
+
                 when (event.action) {
                     MotionEvent.ACTION_MOVE -> {
                         val deltaY = event.rawY.toInt() - prevY
                         prevY = event.rawY.toInt()
-                        //Log.d("TEST_IT", "ACTION_MOVE deltaY: $deltaY prevY: $prevY" )
+                        Log.d("TEST_IT", "ACTION_MOVE deltaY: $deltaY prevY: $prevY" )
                         calculateRingPosition(deltaY)
                         return true
                     }
                     MotionEvent.ACTION_UP -> {
                         val deltaY = event.rawY.toInt() - prevY
-                        //Log.d("TEST_IT", "ACTION_UP deltaY: $deltaY")
+                        Log.d("TEST_IT", "ACTION_UP deltaY: $deltaY")
                         calculateRingPosition(deltaY)
+                        parent.requestDisallowInterceptTouchEvent(false)
+                        view.performClick()
                         return true
                     }
                     MotionEvent.ACTION_DOWN -> {
                         prevY = event.rawY.toInt()
-                        //Log.d("TEST_IT", "ACTION_DOWN prevY: $prevY")
+                        Log.d("TEST_IT", "ACTION_DOWN prevY: $prevY")
                         return true
                     }
                 }

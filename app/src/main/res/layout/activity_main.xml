@@ -12,209 +12,45 @@
         android:id="@+id/nested_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:overScrollMode="never"
         >
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            >
+            android:orientation="vertical">
 
             <com.milen.bluetoothapp.ui.custom_views.VerticalGradientSlider
                 android:id="@+id/verticalBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                app:layout_anchor="@+id/verticalBar"
-                app:layout_anchorGravity="center"
-                android:visibility="gone"
+                android:visibility="visible"
                 />
-
-            <com.google.android.material.progressindicator.CircularProgressIndicator
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:progress="50"
-                android:layout_gravity="center"
-                app:indicatorColor="@color/sky"
-                app:trackColor="@color/colorBlueLightApp"
-                app:indicatorSize="120dp"
-                app:indicatorDirectionCircular="clockwise"
-                app:indicatorInset="20dp"
-                app:trackCornerRadius="5dp"
-                app:trackThickness="10dp"
-                />
-
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:itemCount="4"
-                tools:listitem="@layout/medical_condition_item_layout"
-                tools:orientation="horizontal"
-                android:visibility="gone"
-                />
-
-<!--            <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content">-->
-<!--                <TextView-->
-<!--                    android:id="@+id/some1"-->
-<!--                    android:text="IBDU"-->
-<!--                    style="@style/ConditionItem"-->
-<!--                    />-->
-
-<!--                <TextView-->
-<!--                    android:id="@+id/some2"-->
-<!--                    android:text="Ulcerative Colitis"-->
-<!--                    style="@style/ConditionItem"-->
-<!--                    />-->
-
-<!--                <TextView-->
-<!--                    android:id="@+id/some3"-->
-<!--                    android:text="Crohn’s Disease"-->
-<!--                    style="@style/ConditionItem"-->
-<!--                    />-->
-
-<!--                <TextView-->
-<!--                    android:id="@+id/some4"-->
-<!--                    android:text="Pouchitis"-->
-<!--                    style="@style/ConditionItem"-->
-<!--                    />-->
-
-<!--                <TextView-->
-<!--                    android:id="@+id/some5"-->
-<!--                    android:text="Celiac"-->
-<!--                    style="@style/ConditionItem"-->
-<!--                    />-->
-
-<!--                <TextView-->
-<!--                    android:id="@+id/some6"-->
-<!--                    android:text="Microscoptic Colitis"-->
-<!--                    style="@style/ConditionItem"-->
-
-<!--                    />-->
-
-<!--                <TextView-->
-<!--                    android:id="@+id/some7"-->
-<!--                    android:text="Not yet diagnosed"-->
-<!--                    style="@style/ConditionItem"-->
-<!--                    />-->
-
-
-<!--                <androidx.constraintlayout.helper.widget.Flow-->
-<!--                    android:id="@+id/flow"-->
-<!--                    android:layout_width="0dp"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:padding="16dp"-->
-<!--                    app:constraint_referenced_ids="some1,some2,some3,some4,some5,some6,some7"-->
-<!--                    app:flow_firstVerticalBias="0"-->
-<!--                    app:flow_horizontalAlign="start"-->
-<!--                    app:flow_horizontalBias="0"-->
-<!--                    app:flow_horizontalGap="16dp"-->
-<!--                    app:flow_horizontalStyle="packed"-->
-<!--                    app:flow_maxElementsWrap="2"-->
-<!--                    app:flow_verticalBias="0"-->
-<!--                    app:flow_verticalGap="16dp"-->
-<!--                    app:flow_wrapMode="chain"-->
-<!--                    app:layout_constraintEnd_toEndOf="parent"-->
-<!--                    app:layout_constraintStart_toStartOf="parent"-->
-<!--                    app:layout_constraintTop_toTopOf="parent" />-->
-
-<!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
 
             <com.milen.bluetoothapp.ui.custom_views.FlowView
                 android:id="@+id/flowView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                />
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:text="TEST BUTTON"
-                android:layout_margin="16dp"
-                android:onClick="buttonClicked"
-                />
+                android:visibility="visible" />
 
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:text="TEST BUTTON"
-                android:layout_margin="16dp"
-                android:onClick="buttonClicked"
-                />
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:text="TEST BUTTON"
-                android:layout_margin="16dp"
-                android:onClick="buttonClicked"
-                />
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:text="TEST BUTTON"
-                android:layout_margin="16dp"
-                android:onClick="buttonClicked"
-                />
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:text="TEST BUTTON"
-                android:layout_margin="16dp"
-                android:onClick="buttonClicked"
-                />
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_margin="16dp"
-                android:onClick="buttonClicked"
-                android:text="TEST BUTTON" />
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:text="TEST BUTTON"
-                android:layout_margin="16dp"
-                android:onClick="buttonClicked"
-                />
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:text="TEST BUTTON"
-                android:layout_margin="16dp"
-                android:onClick="buttonClicked"
-                />
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:text="TEST BUTTON"
-                android:layout_margin="16dp"
-                android:onClick="buttonClicked"
-                />
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:text="TEST BUTTON"
-                android:layout_margin="16dp"
-                android:onClick="buttonClicked"
-                />
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_gravity="center"
+                android:progress="50"
+                android:visibility="visible"
+                app:indicatorColor="@color/sky"
+                app:indicatorDirectionCircular="clockwise"
+                app:indicatorInset="20dp"
+                app:indicatorSize="120dp"
+                app:trackColor="@color/colorBlueLightApp"
+                app:trackCornerRadius="5dp"
+                app:trackThickness="10dp" />
         </LinearLayout>
-
     </androidx.core.widget.NestedScrollView>
-
-
 
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottomAppBar"
-        style="@style/Widget.MaterialComponents.BottomAppBar.Colored"
         android:layout_width="match_parent"
         android:layout_height="88dp"
         android:layout_gravity="bottom"
@@ -238,10 +74,73 @@
             app:itemTextColor="@color/colorPrimaryApp"
             app:itemIconTint="@color/colorPrimaryApp"
             app:itemBackground="@drawable/bvn_transparent_light_blue_color_selector"
-            android:layout_marginEnd="16dp"
-            />
+            android:layout_marginEnd="16dp" />
 
     </com.google.android.material.bottomappbar.BottomAppBar>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/more_buttons_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimaryApp50Alpha"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone"
+        >
+
+        <Button
+            android:id="@+id/btn_symptoms"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:drawableTop="@drawable/bvn_circle_symptoms"
+            android:text="Symptoms"
+            android:textAllCaps="false"
+            android:layout_marginEnd="40dp"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_horizontal_guide"
+            app:layout_constraintEnd_toStartOf="@+id/half_vertical_guide"
+            />
+
+        <Button
+            android:id="@+id/btn_bowel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:drawableTop="@drawable/bnv_circle_bowel"
+            android:text="Bowel"
+            android:textAllCaps="false"
+            android:layout_marginStart="40dp"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_horizontal_guide"
+            app:layout_constraintStart_toStartOf="@+id/half_vertical_guide" />
+
+        <Button
+            android:id="@+id/btn_feelings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:drawableTop="@drawable/bnv_circle_feelings"
+            android:text="Feelings"
+            android:textAllCaps="false"
+            android:layout_marginBottom="40dp"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_horizontal_guide"
+            app:layout_constraintEnd_toStartOf="@+id/btn_bowel"
+            app:layout_constraintStart_toEndOf="@+id/btn_symptoms" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/half_vertical_guide"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/bottom_horizontal_guide"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_end="112dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"

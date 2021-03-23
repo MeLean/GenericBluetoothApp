@@ -16,9 +16,11 @@ import android.graphics.Point
 import android.os.Bundle
 import android.os.Handler
 import android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
+import android.view.MotionEvent
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.shape.CornerFamily
@@ -35,6 +37,8 @@ import com.milen.bluetoothapp.services.MyBluetoothService
 import com.milen.bluetoothapp.ui.adapters.MedicalConditionsRecyclerAdapter
 import com.milen.bluetoothapp.ui.custom_views.FlowView
 import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter.Page.PAGE_PARED_DEVICES
+import com.milen.bluetoothapp.utils.beGone
+import com.milen.bluetoothapp.utils.beVisible
 import com.milen.bluetoothapp.view_models.ACTION_DISCOVERY_FAILED
 import com.milen.bluetoothapp.view_models.MainViewModel
 import com.milen.bluetoothapp.view_models.MainViewModelFactory
@@ -111,7 +115,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("ClickableViewAccessibility")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -131,7 +135,10 @@ class MainActivity : AppCompatActivity() {
 
         fab.setOnClickListener {
             if (it.alpha > 0.0f) {
-                Snackbar.make(it, "Yeeeaay", Snackbar.LENGTH_LONG).show()
+                when {
+                    more_buttons_layout.isVisible -> more_buttons_layout.beGone()
+                    else -> more_buttons_layout.beVisible()
+                }
             }
         }
 
@@ -148,19 +155,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
-        recycler.layoutManager = LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
-        recycler.adapter = MedicalConditionsRecyclerAdapter(
-            listOf(
-                ConditionNames("1", "IBDU"),
-                ConditionNames("2", "Ulcerative Colitis"),
-                ConditionNames("3", "Crohn’s Disease"),
-                ConditionNames("3", "Pouchitis"),
-                ConditionNames("3", "Celiac"),
-                ConditionNames("3", "Microscoptic Colitis"),
-                ConditionNames("3", "Not yet diagnosed")
-            )
-        )
 
         flowView.setItems(
             listOf(
@@ -184,15 +178,6 @@ class MainActivity : AppCompatActivity() {
                 ).show()
             }
         })
-
-
-
-
-//        flowView.setItems(
-//            listOf(
-//                ConditionNames("1", "IBAAAA GO")
-//            )
-//        )
 
     }
 

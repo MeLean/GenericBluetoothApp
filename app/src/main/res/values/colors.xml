@@ -7,5 +7,9 @@
     <color name="colorWhite">#FFFFFF</color>
     <color name="sky">#0099FF</color>
     <color name="colorPrimaryApp">#232D95</color>
+    <color name="colorPrimaryApp50Alpha">#88232D95</color>
     <color name="colorBlueLightApp">#ECEEFF</color>
+    <color name="green">#00BA88</color>
+    <color name="green_hint">#00805D</color>
+    <color name="light_transparent_green">#2200BA88</color>
 </resources>
