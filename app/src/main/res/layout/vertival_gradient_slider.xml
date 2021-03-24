@@ -20,6 +20,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
+        android:id="@+id/vgs_measure_layout"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:orientation="vertical"
@@ -30,31 +31,37 @@
         >
 
         <TextView
+            android:id="@+id/vgs_measure_1"
             style="@style/VgsGridItem"
             android:text="100"
             tools:ignore="HardcodedText" />
 
         <TextView
+            android:id="@+id/vgs_measure_2"
             style="@style/VgsGridItem"
             android:text="80"
             tools:ignore="HardcodedText" />
 
         <TextView
+            android:id="@+id/vgs_measure_3"
             style="@style/VgsGridItem"
             android:text="60"
             tools:ignore="HardcodedText" />
 
         <TextView
+            android:id="@+id/vgs_measure_4"
             style="@style/VgsGridItem"
             android:text="40"
             tools:ignore="HardcodedText" />
 
         <TextView
+            android:id="@+id/vgs_measure_5"
             style="@style/VgsGridItem"
             android:text="20"
             tools:ignore="HardcodedText" />
 
         <TextView
+            android:id="@+id/vgs_measure_6"
             style="@style/VgsGridItem"
             android:text="1"
             tools:ignore="HardcodedText" />

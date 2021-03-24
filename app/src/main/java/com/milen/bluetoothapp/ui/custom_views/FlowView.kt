@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.milen.bluetoothapp.R
 import com.milen.bluetoothapp.data.entities.ConditionNames
+import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.android.synthetic.main.fw_layout.view.*
 
 const val SELECTED_KEY = "selectedItemId"

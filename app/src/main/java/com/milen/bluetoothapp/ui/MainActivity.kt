@@ -34,8 +34,6 @@ import com.milen.bluetoothapp.services.MyBluetoothService
 import com.milen.bluetoothapp.ui.custom_views.CustomTextInput
 import com.milen.bluetoothapp.ui.custom_views.FlowView
 import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter.Page.PAGE_PARED_DEVICES
-import com.milen.bluetoothapp.utils.beGone
-import com.milen.bluetoothapp.utils.beVisible
 import com.milen.bluetoothapp.view_models.ACTION_DISCOVERY_FAILED
 import com.milen.bluetoothapp.view_models.MainViewModel
 import com.milen.bluetoothapp.view_models.MainViewModelFactory

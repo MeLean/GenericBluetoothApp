@@ -1,6 +1,8 @@
 package com.milen.bluetoothapp.ui.custom_views
 
 import android.content.Context
+import android.os.Bundle
+import android.os.Parcelable
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,7 +13,8 @@ import com.milen.bluetoothapp.R
 import kotlinx.android.synthetic.main.vertival_gradient_slider.view.*
 import kotlin.math.roundToInt
 
-
+const val RING_POSITION_KEY = "positionKey"
+const val DEFAULT_RING_POSITION = 0.5f
 class VerticalGradientSlider @JvmOverloads constructor(
     context: Context,
     attr: AttributeSet? = null,
@@ -26,10 +29,35 @@ class VerticalGradientSlider @JvmOverloads constructor(
         calculateRingPosition()
     }
 
+
+    override fun onSaveInstanceState(): Parcelable {
+        val bundle = Bundle()
+        vgs_ring?.constraintLayoutParams()?.let {
+            bundle.putFloat(RING_POSITION_KEY, it.verticalBias)
+        }
+
+        bundle.putParcelable(SUPER_STATE_KEY, super.onSaveInstanceState())
+        return bundle
+    }
+
+
+    override fun onRestoreInstanceState(state: Parcelable) {
+        if (state is Bundle) {
+            val curRingPosition = state.getFloat(RING_POSITION_KEY, DEFAULT_RING_POSITION)
+            vgs_ring?.constraintLayoutParams()?.let {
+                it.verticalBias = curRingPosition
+                calculateRingPosition()
+            }
+        }
+
+        super.onRestoreInstanceState(super.onSaveInstanceState())
+    }
+
+
     private fun calculateRingPosition(deltaY: Int = 0) {
         var curPosition = 0.0f
 
-        vgs_ring?.constraintLayoutParams()?.let{
+        vgs_ring?.constraintLayoutParams()?.let {
             curPosition = calculateCurPosition(it.verticalBias, deltaY)
             it.verticalBias = curPosition
             vgs_ring.invalidate()
