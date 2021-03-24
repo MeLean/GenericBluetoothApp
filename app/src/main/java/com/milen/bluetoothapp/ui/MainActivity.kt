@@ -163,6 +163,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         //Int FlowView
+
+        flowView.setItems(
+            listOf(
+                ConditionNames("1", "test 1"),
+                ConditionNames("2", "test 2")
+            )
+        )
+
+        //test override items if we have any
         flowView.setItems(
             listOf(
                 ConditionNames("1", "IBDU"),

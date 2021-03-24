@@ -21,7 +21,6 @@ class FlowView @JvmOverloads constructor(
     attr: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attr, defStyleAttr) {
-    private var items: List<ConditionNames> = listOf()
     private var views: MutableList<TextView> = mutableListOf()
     private var listener: OnFlowViewItemClickListener? = null
     private var selectedItemId: String? = null
@@ -54,12 +53,25 @@ class FlowView @JvmOverloads constructor(
     }
 
     fun setItems(items: List<ConditionNames>) {
-        this.items = items
-        setItems()
+        setViewItems(items)
         invalidate()
     }
 
-    private fun setItems() {
+    private fun setViewItems(items: List<ConditionNames>) {
+
+        removeAllAddedView()
+        createViewsFrom(items)
+    }
+
+    private fun removeAllAddedView() {
+        views.forEach { textView ->
+            this.removeView(textView)
+        }
+
+        views.clear()
+    }
+
+    private fun createViewsFrom(items: List<ConditionNames>) {
         val ids = mutableListOf<Int>()
         for (item in items) {
             val textView = TextView(ContextThemeWrapper(this.context, R.style.ConditionItem)).also {
