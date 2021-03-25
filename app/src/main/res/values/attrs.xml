@@ -23,6 +23,10 @@
             <enum name="cti_valid" value="1"/>
             <enum name="cti_error" value="2"/>
         </attr>
+        <attr name="cti_input_type" format="enum">
+            <enum name="cti_default" value="0"/>
+            <enum name="cti_password" value="1"/>
+        </attr>
     </declare-styleable>
 
 </resources>

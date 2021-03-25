@@ -6,11 +6,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout"
     >
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <RelativeLayout
         android:id="@+id/input_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,28 +20,33 @@
             android:id="@+id/left_img"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_gravity="center"
             android:scaleType="centerCrop"
-            android:layout_margin="16dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerInParent="true"
             app:tint="@color/green_hint"
-            app:layout_constraintBottom_toBottomOf="@+id/input_layout"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/input_layout"
+            tools:src="@drawable/bnv_profile"
             tools:ignore="ContentDescription"
-            tools:src="@drawable/bnv_profile" />
+            />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/input_layout"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
+            android:layout_centerInParent="true"
+            android:layout_toEndOf="@+id/left_img"
+            android:layout_toStartOf="@+id/right_img"
+            android:minHeight="80dp"
             android:background="@android:color/transparent"
+            android:padding="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             app:boxStrokeWidth="0dp"
             app:boxStrokeWidthFocused="0dp"
             app:hintAnimationEnabled="true"
             app:hintTextAppearance="@style/DefaultCustomTextInputHint"
-            app:layout_constraintEnd_toStartOf="@+id/right_img"
-            app:layout_constraintStart_toEndOf="@+id/left_img"
-            app:layout_constraintTop_toTopOf="parent"
             tools:hint="some hint"
             >
 
@@ -50,11 +54,11 @@
                 android:id="@+id/input_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="80dp"
                 android:background="@android:color/transparent"
                 android:gravity="center_vertical"
-                android:imeOptions="actionDone"
-                android:inputType="text"
+                android:imeOptions="actionNext"
+                android:inputType="textMultiLine"
+                android:nextFocusUp="@+id/input_layout"
                 android:textColorHint="@color/green_hint"
                 />
         </com.google.android.material.textfield.TextInputLayout>
@@ -63,16 +67,16 @@
             android:id="@+id/right_img"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
             android:scaleType="centerCrop"
-            android:layout_margin="16dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerInParent="true"
             app:tint="@color/green_hint"
-            app:layout_constraintBottom_toBottomOf="@+id/input_layout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/input_layout"
+            tools:src="@drawable/cti_circular_tick"
             tools:ignore="ContentDescription"
             />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </RelativeLayout>
 
 
     <TextView

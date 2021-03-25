@@ -5,6 +5,7 @@ import android.content.res.ColorStateList
 import android.content.res.TypedArray
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.ColorRes
@@ -51,7 +52,6 @@ class CustomTextInput  @JvmOverloads constructor(
             )
         )
 
-
         val strValue = attributeArray?.getString(R.styleable.CustomTextInput_cti_hint) ?: ""
         attributeArray?.getResourceId(R.styleable.CustomTextInput_cti_hint, DEFAULT_REST_VALUE)
             ?.let {
@@ -67,7 +67,22 @@ class CustomTextInput  @JvmOverloads constructor(
                 MODE.CTI_DEFAULT.ordinal
             ) ?: MODE.CTI_DEFAULT.ordinal
         )
+
+        applyInputType(
+            attributeArray?.getInt(
+                R.styleable.CustomTextInput_cti_input_type,
+                INPUT_TYPE.CTI_DEFAULT.ordinal
+            ) ?: INPUT_TYPE.CTI_DEFAULT.ordinal
+        )
+
         attributeArray?.recycle()
+    }
+
+    private fun applyInputType(InputOriginal: Int) {
+        when(InputOriginal){
+            INPUT_TYPE.CTI_PASSWORD.ordinal -> input_edit_text.inputType = EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            else -> input_edit_text.inputType = EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE
+        }
     }
 
     private fun setResOrHide(img: ImageView?, resId: Int?) {
@@ -135,8 +150,8 @@ class CustomTextInput  @JvmOverloads constructor(
         rightImrRes?.let {
             setResOrHide(right_img, it)
         }
-
         applyMode(mode.ordinal)
+
         result_msg.text = msg
     }
 
@@ -144,6 +159,11 @@ class CustomTextInput  @JvmOverloads constructor(
         CTI_DEFAULT,
         CTI_VALID,
         CTI_ERROR
+    }
+
+    enum class INPUT_TYPE {
+        CTI_DEFAULT,
+        CTI_PASSWORD,
     }
 }
 

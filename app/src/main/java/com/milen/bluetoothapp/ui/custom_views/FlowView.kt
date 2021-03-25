@@ -11,12 +11,10 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.milen.bluetoothapp.R
 import com.milen.bluetoothapp.data.entities.ConditionNames
-import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.android.synthetic.main.fw_layout.view.*
 
 const val SELECTED_KEY = "selectedItemId"
-const val SUPER_STATE_KEY = "superState"
-
+const val FW_PARENT_STATE_KEY = "fw_parent_state_key"
 class FlowView @JvmOverloads constructor(
     context: Context,
     attr: AttributeSet? = null,
@@ -34,23 +32,27 @@ class FlowView @JvmOverloads constructor(
 
     override fun onSaveInstanceState(): Parcelable {
         val bundle = Bundle()
+        bundle.putParcelable(FW_PARENT_STATE_KEY, super.onSaveInstanceState())
         bundle.putString(SELECTED_KEY, selectedItemId)
-        bundle.putParcelable(SUPER_STATE_KEY, super.onSaveInstanceState())
+        super.onSaveInstanceState()
         return bundle
     }
 
     override fun onRestoreInstanceState(state: Parcelable) {
-        var viewState = state
-        if (viewState is Bundle) {
-            selectedItemId = viewState.getString(SELECTED_KEY, null)
-            viewState = viewState.getParcelable(SUPER_STATE_KEY) ?: Bundle()
+        var parentState : Parcelable? = null
+        if (state is Bundle) {
+            selectedItemId = state.getString(SELECTED_KEY, null)
+            state.getParcelable<Parcelable?>(FW_PARENT_STATE_KEY)?.let {
+                parentState = it
+            }
             selectedItemId?.let{
                 views.forEach {view ->
                     view.isSelected = it == view.tag
                 }
             }
         }
-        super.onRestoreInstanceState(viewState)
+
+        super.onRestoreInstanceState(parentState ?: super.onSaveInstanceState())
     }
 
     fun setItems(items: List<ConditionNames>) {

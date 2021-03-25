@@ -14,6 +14,7 @@ import kotlinx.android.synthetic.main.vertival_gradient_slider.view.*
 import kotlin.math.roundToInt
 
 const val RING_POSITION_KEY = "positionKey"
+const val VSG_PARENT_STATE_KEY = "vsg_parent_state_key"
 const val DEFAULT_RING_POSITION = 0.5f
 class VerticalGradientSlider @JvmOverloads constructor(
     context: Context,
@@ -33,24 +34,28 @@ class VerticalGradientSlider @JvmOverloads constructor(
     override fun onSaveInstanceState(): Parcelable {
         val bundle = Bundle()
         vgs_ring?.constraintLayoutParams()?.let {
+            bundle.putParcelable(VSG_PARENT_STATE_KEY, super.onSaveInstanceState())
             bundle.putFloat(RING_POSITION_KEY, it.verticalBias)
         }
-
-        bundle.putParcelable(SUPER_STATE_KEY, super.onSaveInstanceState())
+        super.onSaveInstanceState()
         return bundle
     }
 
 
     override fun onRestoreInstanceState(state: Parcelable) {
+        var parentState : Parcelable? = null
         if (state is Bundle) {
             val curRingPosition = state.getFloat(RING_POSITION_KEY, DEFAULT_RING_POSITION)
+            state.getParcelable<Parcelable?>(VSG_PARENT_STATE_KEY)?.let {
+                parentState = it
+            }
             vgs_ring?.constraintLayoutParams()?.let {
                 it.verticalBias = curRingPosition
                 calculateRingPosition()
             }
         }
 
-        super.onRestoreInstanceState(super.onSaveInstanceState())
+        super.onRestoreInstanceState(parentState ?: super.onSaveInstanceState())
     }
 
 

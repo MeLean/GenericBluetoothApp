@@ -55,6 +55,7 @@
                 app:cti_left_icon="@drawable/bnv_profile"
                 app:cti_right_icon="@drawable/cti_circular_tick"
                 app:cti_mode="cti_error"
+                app:cti_input_type="cti_password"
                 />
 
 <!--            <com.milen.bluetoothapp.ui.custom_views.CustomTextInput-->
