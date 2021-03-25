@@ -64,6 +64,12 @@
 <!--                android:layout_height="wrap_content"-->
 <!--                />-->
 
+            <Button
+                android:id="@+id/show_popup_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Show popup"
+                />
             <com.milen.bluetoothapp.ui.custom_views.FlowView
                 android:id="@+id/flowView"
                 android:layout_width="wrap_content"

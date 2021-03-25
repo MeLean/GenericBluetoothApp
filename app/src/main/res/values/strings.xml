@@ -36,4 +36,6 @@
     <string name="received_msg">"received: "</string>
     <string name="deep_linking_label">Deep Linking</string>
     <string name="deep_linking_called_text">Called by Deep Link with:</string>
+    <string name="no">no</string>
+    <string name="proceed">proceed</string>
 </resources>

@@ -33,11 +33,14 @@ import com.milen.bluetoothapp.services.MESSAGE_FAIL_CONNECT
 import com.milen.bluetoothapp.services.MyBluetoothService
 import com.milen.bluetoothapp.ui.custom_views.CustomTextInput
 import com.milen.bluetoothapp.ui.custom_views.FlowView
+import com.milen.bluetoothapp.ui.dialogs.CustomDialogFragment
+import com.milen.bluetoothapp.ui.dialogs.FRAG_TAG
 import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter.Page.PAGE_PARED_DEVICES
 import com.milen.bluetoothapp.view_models.ACTION_DISCOVERY_FAILED
 import com.milen.bluetoothapp.view_models.MainViewModel
 import com.milen.bluetoothapp.view_models.MainViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.medical_condition_item_layout.*
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -201,6 +204,24 @@ class MainActivity : AppCompatActivity() {
         custom_default.setText("ohoooo!")
 
         custom_error.showResultMessage(CustomTextInput.MODE.CTI_ERROR, "Error", R.drawable.cti_error_x)
+
+        //bottomSheet popups
+
+        show_popup_btn.setOnClickListener{
+            CustomDialogFragment(
+                "DIALOGCHE",
+                "SOME TEXT TO DISPLAY",
+                null,
+                null,
+                "NO",
+                "YES",
+                null,
+                {},
+                {
+                    Snackbar.make(show_popup_btn, "Yeeeaaay!", Snackbar.LENGTH_LONG).show()
+                }
+            ).show(supportFragmentManager, FRAG_TAG)
+        }
     }
 
     override fun onStart() {

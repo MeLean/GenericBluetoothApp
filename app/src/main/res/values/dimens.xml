@@ -16,4 +16,5 @@
     <dimen name="remote_command_size">150dp</dimen>
     <dimen name="remote_custom_btn_size">40dp</dimen>
     <dimen name="default_corner_radius">24dp</dimen>
+    <dimen name="mirror_space">8dp</dimen>
 </resources>
