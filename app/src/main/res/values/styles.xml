@@ -6,8 +6,29 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:homeAsUpIndicator">@drawable/ic_close</item>
+        <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
     </style>
 
+    <!-- Bottom Sheet style -->
+    <style name="CustomBottomSheetDialog" parent="@style/ThemeOverlay.MaterialComponents.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/CustomBottomSheet</item>
+    </style>
+
+    <style name="CustomBottomSheet" parent="Widget.MaterialComponents.BottomSheet">
+        <item name="shapeAppearanceOverlay">@style/CustomShapeAppearanceBottomSheetDialog</item>
+    </style>
+
+    <style name="CustomShapeAppearanceBottomSheetDialog" parent="">
+        <item name="background">@drawable/cti_rounded_green</item>
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">16dp</item>
+        <item name="cornerSizeTopLeft">16dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+    </style>
+
+
+    <!-- ParedDeviceNormalTitle -->
     <style name="ParedDeviceNormalTitle">
         <item name="android:padding">8dp</item>
         <item name="android:textSize">18sp</item>
@@ -85,7 +106,42 @@
         <item name="android:textColorHint">@color/cti_gray_hint</item>
     </style>
 
-    <style name="CustomDialogButton"></style>
-
     <!--        <item name="android:fontFamily">@font/lato_regular</item>-->
+
+    <style name="CustomMainDialogButton">
+        <item name="android:layout_margin">8dp</item>
+        <item name="android:elevation">7dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:minWidth">216dp</item>
+        <item name="android:minHeight">56dp</item>
+        <item name="backgroundTint">@color/colorPrimaryApp</item>
+        <item name="cornerRadius">40dp</item>
+    </style>
+
+
+    <style name="CustomTextDialogButton" parent="CustomMainDialogButton">
+        <item name="backgroundTint">@android:color/transparent</item>
+        <item name="android:textColor">@color/darkGray</item>
+        <item name="android:elevation">0dp</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="CustomDialogBodyText">
+        <item name="android:gravity">center</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textSize">18sp</item>
+        <item name="lineHeight">32dp</item>
+        <item name="android:padding">@dimen/space_small</item>
+    </style>
+
+    <style name="CustomDialogTitleText" parent="CustomDialogBodyText">
+        <item name="android:gravity">center</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:textColor">#383636</item>
+        <item name="android:textSize">32sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>

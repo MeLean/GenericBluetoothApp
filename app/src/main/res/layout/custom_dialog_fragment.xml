@@ -6,14 +6,24 @@
     android:layout_height="wrap_content"
     >
 
+    <ImageView
+        android:id="@+id/dialog_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/mirror_space"
+        android:contentDescription="@android:string/cancel"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/dialog_logo_background"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="140dp"
         android:scaleType="fitXY"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_close"
         app:lottie_autoPlay="true"
         app:lottie_loop="true" />
 
@@ -32,81 +42,70 @@
 
     <TextView
         android:id="@+id/dialog_title"
-        android:layout_width="match_parent"
+        style="@style/CustomDialogTitleText"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textAlignment="center"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:layout_marginTop="@dimen/mirror_space"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dialog_logo_background"
-        tools:text="Title"
-        tools:ignore="HardcodedText" />
+        tools:ignore="HardcodedText"
+        tools:text="Title" />
 
     <TextView
         android:id="@+id/dialog_text"
-        android:layout_width="match_parent"
+        style="@style/CustomDialogBodyText"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="20dp"
-        android:gravity="center"
-        android:textAlignment="center"
-        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@+id/dialog_filled_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dialog_title"
         tools:ignore="HardcodedText"
         tools:text="Body text of the dialog" />
 
-    <View
-        android:id="@+id/dash"
+    <Space
+        android:id="@+id/dialog_text_buttons_space"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_centerHorizontal="true"
-        android:background="#E1E4E7"
-        android:layout_marginTop="20dp"
-        app:layout_constraintTop_toBottomOf="@+id/dialog_text"
-        tools:layout_editor_absoluteX="16dp" />
+        android:layout_height="32dp"
+        app:layout_constraintBottom_toTopOf="@+id/dialog_filled_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_text" />
 
     <Button
-        android:id="@+id/dialog_left_btn"
+        android:id="@+id/dialog_filled_btn"
+        style="@style/CustomMainDialogButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/no"
-        android:layout_margin="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="0dp"
+        android:text="@android:string/ok"
+        app:layout_constraintBottom_toTopOf="@+id/dialog_center_btn"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dash"
-        tools:visibility="visible"
-        style="@style/CustomDialogButton"
-        />
+        tools:visibility="visible" />
 
     <Button
         android:id="@+id/dialog_center_btn"
+        style="@style/CustomMainDialogButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/proceed"
-        android:layout_margin="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/dialog_right_btn"
-        app:layout_constraintStart_toEndOf="@+id/dialog_left_btn"
-        app:layout_constraintTop_toBottomOf="@+id/dash"
-        tools:visibility="visible"
-        style="@style/CustomDialogButton"
-        />
+        android:text="@android:string/search_go"
+        app:layout_constraintBottom_toTopOf="@+id/dialog_just_text_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="visible" />
 
 
-    <Button
-        android:id="@+id/dialog_right_btn"
+    <TextView
+        android:id="@+id/dialog_just_text_btn"
+        style="@style/CustomTextDialogButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@android:string/ok"
-        android:layout_margin="10dp"
+        android:text="@android:string/cancel"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dash"
-        tools:visibility="visible"
-        style="@style/CustomDialogButton"
-        />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="visible" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

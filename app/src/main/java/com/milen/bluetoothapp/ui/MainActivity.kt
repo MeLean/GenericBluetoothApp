@@ -192,7 +192,9 @@ class MainActivity : AppCompatActivity() {
                     flowView,
                     "chosen:  ${item.name ?: "NO NAME"}",
                     Snackbar.LENGTH_LONG
-                ).show()
+                ).also{
+                    it.anchorView = fab
+                }.show()
             }
         })
 
@@ -209,17 +211,19 @@ class MainActivity : AppCompatActivity() {
 
         show_popup_btn.setOnClickListener{
             CustomDialogFragment(
-                "DIALOGCHE",
-                "SOME TEXT TO DISPLAY",
+                "Feedback submitted!",
+                "Thank you for submitting your rating and experience!",
                 null,
                 null,
-                "NO",
-                "YES",
+                "yes",
+                "no",
                 null,
-                {},
                 {
-                    Snackbar.make(show_popup_btn, "Yeeeaaay!", Snackbar.LENGTH_LONG).show()
-                }
+                   Snackbar.make(show_popup_btn, "Yeeeaaay!", Snackbar.LENGTH_LONG).also {
+                       it.anchorView = fab
+                   }.show()
+                },
+                {}
             ).show(supportFragmentManager, FRAG_TAG)
         }
     }
