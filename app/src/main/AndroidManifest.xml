@@ -38,6 +38,9 @@
                     android:host="main" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".ui.FilledLineActivity"/>
+
     </application>
 
 </manifest>

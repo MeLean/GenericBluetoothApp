@@ -17,7 +17,36 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            >
+
+<!--            <com.db.williamchart.view.LineChartView-->
+<!--                android:id="@+id/chartView"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:chart_lineColor="color"-->
+<!--                app:chart_lineThickness="@dimen/mirror_space"-->
+<!--                app:chart_smoothLine="true"-->
+<!--                app:chart_pointDrawable="@drawable/cti_circular_tick"-->
+<!--            />-->
+
+
+            <Button
+                android:id="@+id/load_chart_example"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Load Chart Example"
+                />
+
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/chart"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginRight="0dp"
+                android:layout_marginBottom="20dp"
+                android:background="@color/colorWhite" />
 
             <com.milen.bluetoothapp.ui.custom_views.VerticalGradientSlider
                 android:id="@+id/vgs_item"
@@ -129,7 +158,6 @@
         android:background="@color/colorPrimaryApp50Alpha"
         android:clickable="true"
         android:focusable="true"
-        android:visibility="gone"
         >
 
         <Button

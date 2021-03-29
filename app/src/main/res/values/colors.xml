@@ -17,4 +17,7 @@
     <color name="gray_hint">#9B9898</color>
     <color name="light_gray">#F2F0F0</color>
     <color name="darkGray">#545454</color>
+    <color name="chart_green">#34EAB9</color>
+    <color name="chart_red">#ED2E7E</color>
+    <color name="chart_yellow">#FAD72C</color>
 </resources>

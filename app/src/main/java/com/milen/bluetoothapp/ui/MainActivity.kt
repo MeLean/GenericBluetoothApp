@@ -11,21 +11,33 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.graphics.Point
 import android.os.Bundle
 import android.os.Handler
 import android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
 import android.view.View
 import android.view.ViewAnimationUtils
+import android.view.ViewTreeObserver
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import com.github.mikephil.charting.components.Legend
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.components.YAxis
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.formatter.IAxisValueFormatter
 import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.snackbar.Snackbar
 import com.milen.GenericBluetoothApp.Companion.defaultSharedPreferences
 import com.milen.bluetoothapp.R
 import com.milen.bluetoothapp.data.entities.ConditionNames
+import com.milen.bluetoothapp.data.entities.TrackerDetails
+import com.milen.bluetoothapp.data.entities.TrackerScores
 import com.milen.bluetoothapp.extensions.showToastMessage
 import com.milen.bluetoothapp.extensions.toDecodedString
 import com.milen.bluetoothapp.services.MESSAGE_CONNECT_SUCCESS
@@ -36,11 +48,13 @@ import com.milen.bluetoothapp.ui.custom_views.FlowView
 import com.milen.bluetoothapp.ui.dialogs.CustomDialogFragment
 import com.milen.bluetoothapp.ui.dialogs.FRAG_TAG
 import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter.Page.PAGE_PARED_DEVICES
+import com.milen.bluetoothapp.utils.Utils
+import com.milen.bluetoothapp.utils.beGone
 import com.milen.bluetoothapp.view_models.ACTION_DISCOVERY_FAILED
 import com.milen.bluetoothapp.view_models.MainViewModel
 import com.milen.bluetoothapp.view_models.MainViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.medical_condition_item_layout.*
+import java.util.*
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -123,6 +137,14 @@ class MainActivity : AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        load_chart_example.setOnClickListener{
+            startActivity(Intent(this, FilledLineActivity::class.java))
+        }
+
+
+
+        //drawBarChart(crateFakeTrackers())
+
         //Corner radius to bottom nav barr
         val radius = resources.getDimension(R.dimen.default_corner_radius)
         val bottomBarBackground = bottomAppBar.background as MaterialShapeDrawable
@@ -135,6 +157,13 @@ class MainActivity : AppCompatActivity() {
             .build()
 
         //show more buttons layout animated
+        more_buttons_layout.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener{
+            override fun onGlobalLayout() {
+                more_buttons_layout.animateCircularHide()
+                more_buttons_layout.viewTreeObserver.removeOnGlobalLayoutListener(this)
+            }
+        })
+
         fab.setOnClickListener {
             if (it.alpha > 0.0f) {
                 val centreX= (it.x + it.width / 2).roundToInt()
@@ -219,13 +248,42 @@ class MainActivity : AppCompatActivity() {
                 "no",
                 null,
                 {
-                   Snackbar.make(show_popup_btn, "Yeeeaaay!", Snackbar.LENGTH_LONG).also {
-                       it.anchorView = fab
-                   }.show()
+                    Snackbar.make(show_popup_btn, "Yeeeaaay!", Snackbar.LENGTH_LONG).also {
+                        it.anchorView = fab
+                    }.show()
                 },
                 {}
             ).show(supportFragmentManager, FRAG_TAG)
         }
+    }
+
+    private fun crateFakeTrackers(): List<TrackerDetails> {
+        val fakeTrackers = mutableListOf<TrackerDetails>()
+        val tracker = TrackerDetails()
+
+        val fakeResults: MutableList<TrackerScores> = mutableListOf()
+        val fakeScores = listOf(1,6,3,4,3,3,7)
+        for (i in 0..6) {
+            fakeResults.add(TrackerScores().also {
+                it.date = "2021-03-" + (19 + i) +"T00:00:00+00:00"
+                it.id = 0
+                it.score = fakeScores[i]
+            })
+        }
+
+        tracker.apply {
+            graphColor = "e9ea89"
+            title_part = "How you felt about your mood"
+            results = fakeResults
+            trackerId = 1
+            trackerName = "Mood"
+            uniqueid = 36
+        }
+
+        fakeTrackers.add(tracker)
+
+        return fakeTrackers
+
     }
 
     override fun onStart() {
@@ -297,6 +355,120 @@ class MainActivity : AppCompatActivity() {
     private fun unregisterDeviceReceiver() {
         unregisterReceiver(deviceFoundReceiver)
         unregisterReceiver(deviceBoundStateChangedReceiver)
+    }
+
+    val sevendays: MutableList<String> = mutableListOf()
+    var results: List<TrackerScores> = listOf()
+    var trackerdetails: List<TrackerDetails> = listOf()
+
+    fun drawBarChart(trackerdetails: List<TrackerDetails>) {
+//        trackerdetails = new ArrayList<>();
+        this.trackerdetails = trackerdetails
+        trackerdetails[0].results?.let {
+            results = it
+        }
+        for (j in results.indices) {
+            sevendays.add(Utils.changeDateFormatDate(results[j].date, "dd/MM", true))
+        }
+
+//        chart.setDrawBarShadow(false)
+//        chart.setDrawValueAboveBar(false)
+        chart.getDescription().setEnabled(false)
+        chart.setMaxVisibleValueCount(8)
+        chart.setPinchZoom(false)
+        chart.setDragEnabled(false)
+        chart.setScaleEnabled(false)
+        chart.setDrawGridBackground(false)
+        val xAxisLabel = ArrayList<String>()
+
+        for (i in 0..6) {
+            if (i < sevendays.size) {
+                xAxisLabel.add(sevendays.get(i))
+            } else {
+                xAxisLabel.add("")
+            }
+        }
+        val xAxis: XAxis = chart.getXAxis()
+
+        xAxis.valueFormatter =
+            IAxisValueFormatter { value, axis -> xAxisLabel[value.toInt()] }
+        xAxis.position = XAxis.XAxisPosition.BOTTOM
+        xAxis.setDrawGridLines(false)
+        xAxis.granularity = 1f // only intervals of 1 day
+        xAxis.textColor = ContextCompat.getColor(this, R.color.gray_hint)
+        xAxis.textSize = 11f
+        xAxis.axisLineColor = ContextCompat.getColor(this, android.R.color.transparent)
+        xAxis.gridColor = ContextCompat.getColor(this, (R.color.light_transparent_green))
+
+        val leftAxis: YAxis = chart.axisRight
+        leftAxis.setLabelCount(8, true)
+        leftAxis.granularity = 1f
+        leftAxis.axisMinimum = 0f
+        leftAxis.gridLineWidth = .6f
+        leftAxis.textColor = ContextCompat.getColor(this, R.color.gray_hint)
+        leftAxis.gridColor = ContextCompat.getColor(this, R.color.colorPrimaryApp)
+        leftAxis.enableGridDashedLine(20f, 20f, 0f)
+        val yAxisLabel = ArrayList<String>()
+        for (i in 0..7) {
+            yAxisLabel.add("☹️")
+            yAxisLabel.add(" ")
+            yAxisLabel.add(" ")
+            yAxisLabel.add("\uD83D\uDE10")
+            yAxisLabel.add(" ")
+            yAxisLabel.add(" ")
+            yAxisLabel.add("\uD83D\uDE42")
+            yAxisLabel.add(" ")
+        }
+        leftAxis.valueFormatter =
+            IAxisValueFormatter { value, axis -> yAxisLabel[value.toInt()] }
+        leftAxis.axisMaximum = 7f
+        leftAxis.textColor = ContextCompat.getColor(this, R.color.gray_hint)
+        leftAxis.textSize = 24f
+        leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART)
+        leftAxis.axisLineColor = ContextCompat.getColor(this, android.R.color.transparent)
+        leftAxis.gridColor = ContextCompat.getColor(this, R.color.light_transparent_green)
+        leftAxis.setDrawLabels(true)
+
+//        val rightAxis: YAxis = chart.getAxisRight()
+//        rightAxis.setDrawGridLines(false)
+//        rightAxis.setDrawLabels(false)
+//        rightAxis.axisLineColor = ContextCompat.getColor(this, android.R.color.transparent)
+//        rightAxis.gridColor = ContextCompat.getColor(this, R.color.light_transparent_green)
+        val l: Legend = chart.getLegend()
+        l.isEnabled = false
+        l.setDrawInside(false)
+        setData(sevendays.size, 200)
+    }
+
+    private fun setData(count: Int, range: Int) {
+        val entries: MutableList<Entry> = ArrayList()
+        //        entries.add(new BarEntry(0,0));
+        if (trackerdetails.size != 0) {
+            for (i in 0..6) {
+                if (i < sevendays.size) {
+                    entries.add(
+                        Entry(
+                            i.toFloat(),
+                            trackerdetails[0].results?.get(i)?.score?.toFloat() ?: 0f
+                        )
+                    )
+                } else {
+                    entries.add(Entry(i.toFloat(), 0f))
+                }
+            }
+        }
+        val set = LineDataSet(entries, "LineDataSet")
+        set.color = Color.parseColor("#" + trackerdetails[0].graphColor)
+        val data = LineData(set)
+        //data.barWidth = 0.3f // set custom bar width
+        data.setDrawValues(false)
+        chart.isDrawBordersEnabled()
+        chart.setBorderColor(ContextCompat.getColor(this, R.color.light_transparent_green))
+        chart.setData(data)
+        //chart.setFitBars(true) // make the x-axis fit exactly all bars
+        chart.setExtraRightOffset(0f)
+        chart.animateY(1000)
+        chart.invalidate()
     }
 
 }

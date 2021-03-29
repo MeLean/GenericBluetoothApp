@@ -9,5 +9,14 @@
         <item>Positive</item>
         <item>Fantastic</item>
     </string-array>
+
+    <integer-array name="colors">
+        <item>@color/light_gray</item>
+        <item>@color/colorWhite</item>
+        <item>@color/colorPrimaryApp</item>
+        <item>@color/colorPrimaryApp</item>
+        <item>@color/colorWhite</item>
+        <item>@color/colorPrimaryApp</item>
+    </integer-array>
 </resources>
 
