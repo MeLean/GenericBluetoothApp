@@ -2,6 +2,7 @@ package com.milen.bluetoothapp.ui
 
 import android.content.Context
 import android.os.Bundle
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
@@ -25,6 +26,11 @@ const val RESULT_SEPARATOR = "; "
 
 class MainActivity : AppCompatActivity() {
     private val defaultMaze = arrayOf(
+        arrayOf(PATH, PATH, PATH, BRICK, PATH, PATH, PATH),
+        arrayOf(BRICK, BRICK, PATH, BRICK, PATH, BRICK, PATH),
+        arrayOf(PATH, PATH, PATH, PATH, PATH, PATH, PATH),
+        arrayOf(PATH, BRICK, BRICK, BRICK, BRICK, BRICK, PATH),
+        arrayOf(PATH, PATH, PATH, PATH, PATH, PATH, BRICK),
         arrayOf(PATH, PATH, PATH, BRICK, PATH, PATH, PATH),
         arrayOf(BRICK, BRICK, PATH, BRICK, PATH, BRICK, PATH),
         arrayOf(PATH, PATH, PATH, PATH, PATH, PATH, PATH),
@@ -72,6 +78,10 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     maze_result.text = ""
                     result_string.text = getString(R.string.no_path_found)
+                }
+
+                scroll_view.post {
+                    scroll_view.fullScroll(View.FOCUS_DOWN)
                 }
 
                 loading_progress.beGone()
