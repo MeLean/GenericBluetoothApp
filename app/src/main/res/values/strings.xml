@@ -36,4 +36,8 @@
     <string name="received_msg">"received: "</string>
     <string name="deep_linking_label">Deep Linking</string>
     <string name="deep_linking_called_text">Called by Deep Link with:</string>
+    <string name="starting_hint">Enter a maze field here</string>
+    <string name="no_path_found">NO PATH FOUND!</string>
+    <string name="find_the_shortest_path">Find the shortest path</string>
+    <string name="not_valid_input">Not valid input</string>
 </resources>

@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.milen.bluetoothapp.ui.PERMISSION_REQUEST_CODE
 
 class PermissionSolverService {
 
@@ -25,7 +24,7 @@ class PermissionSolverService {
         ActivityCompat.requestPermissions(
             activity,
             permissions,
-            PERMISSION_REQUEST_CODE
+            1
         )
     }
 

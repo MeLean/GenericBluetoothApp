@@ -23,9 +23,7 @@ import com.milen.bluetoothapp.services.DeepLinkItemExtractorService
 import com.milen.bluetoothapp.services.MyBluetoothService
 import com.milen.bluetoothapp.data.sharedPreferences.DefaultApplicationSharedPreferences
 import com.milen.bluetoothapp.services.*
-import com.milen.bluetoothapp.services.MESSAGE_CONNECT_SUCCESS
-import com.milen.bluetoothapp.services.MESSAGE_FAIL_CONNECT
-import com.milen.bluetoothapp.ui.BLUETOOTH_START_REQUEST_CODE
+
 import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter.Page
 import com.milen.bluetoothapp.utils.EMPTY_STRING
 
@@ -180,7 +178,7 @@ class MainViewModel(
     private fun startBluetoothOnIntent(activity: Activity) {
         activity.startActivityForResult(
             Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE),
-            BLUETOOTH_START_REQUEST_CODE
+            1
         )
     }
 

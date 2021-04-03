@@ -1,242 +1,179 @@
 package com.milen.bluetoothapp.ui
 
-import android.app.Activity
-import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothAdapter.ACTION_DISCOVERY_FINISHED
-import android.bluetooth.BluetoothAdapter.ACTION_DISCOVERY_STARTED
-import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothDevice.ACTION_FOUND
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.Handler
-import android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
-import android.view.View.GONE
-import android.view.View.VISIBLE
-import androidx.activity.viewModels
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.tabs.TabLayoutMediator
-import com.milen.GenericBluetoothApp.Companion.defaultSharedPreferences
+import com.google.android.material.snackbar.Snackbar
 import com.milen.bluetoothapp.R
-import com.milen.bluetoothapp.extensions.showToastMessage
-import com.milen.bluetoothapp.extensions.toDecodedString
-import com.milen.bluetoothapp.services.MESSAGE_CONNECT_SUCCESS
-import com.milen.bluetoothapp.services.MESSAGE_FAIL_CONNECT
-import com.milen.bluetoothapp.services.MyBluetoothService
-import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter
-import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter.Page.PAGE_PARED_DEVICES
-import com.milen.bluetoothapp.ui.pager.MainFragmentStateAdapter.Page.values
-import com.milen.bluetoothapp.utils.EMPTY_STRING
-import com.milen.bluetoothapp.view_models.ACTION_DISCOVERY_FAILED
-import com.milen.bluetoothapp.view_models.MainViewModel
-import com.milen.bluetoothapp.view_models.MainViewModelFactory
+import com.milen.bluetoothapp.utils.beGone
+import com.milen.bluetoothapp.utils.beVisible
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
+import java.util.concurrent.Executors
 
-const val BLUETOOTH_START_REQUEST_CODE = 123
-const val PERMISSION_REQUEST_CODE = 12345
+const val PATH = "#"
+const val BRICK = "b"
+const val EXIT = "E"
+const val VISITED = "X"
+
+const val ITEM_SEPARATOR = " "
+const val RESULT_SEPARATOR = "; "
+
+
 
 class MainActivity : AppCompatActivity() {
-
-    private val viewModel: MainViewModel by viewModels {
-        MainViewModelFactory(
-            defaultSharedPreferences,
-            MyBluetoothService.getInstance(BluetoothAdapter.getDefaultAdapter(), createHandler()),
-        )
-    }
-
-    private val deviceFoundReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            when (intent.action) {
-                ACTION_FOUND -> onDeviceFound(intent)
-                ACTION_DISCOVERY_STARTED -> showToastMessage(getString(R.string.device_scanning_start))
-                ACTION_DISCOVERY_FINISHED -> showToastMessage(getString(R.string.device_scanning_finished))
-                ACTION_DISCOVERY_FAILED -> {
-                    showToastMessage(getString(R.string.device_scanning_failed))
-                    startActivityForResult(Intent(ACTION_LOCATION_SOURCE_SETTINGS), 0)
-                }
-            }
-        }
-    }
-
-    private val deviceBoundStateChangedReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            when (intent.action) {
-                BluetoothDevice.ACTION_BOND_STATE_CHANGED -> {
-                    showToastMessage(getString(R.string.device_bound_changed))
-
-                    val device: BluetoothDevice? =
-                        intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
-
-                    device?.let {
-                        when (it.bondState) {
-                            BluetoothDevice.BOND_BONDED -> {
-                                viewModel.setParedBluetoothDevice(it)
-                                viewModel.setShouldScrollToPage(PAGE_PARED_DEVICES)
-                                showToastMessage(getString(R.string.device_bound_bonded))
-                            }
-                            BluetoothDevice.BOND_BONDING -> {
-                                showToastMessage(getString(R.string.device_bound_bounding))
-                            }
-                            BluetoothDevice.BOND_NONE -> {
-                                showToastMessage(getString(R.string.device_bound_none))
-                                viewModel.setParedBluetoothDevice(null)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private fun createHandler(): Handler {
-        return Handler { msg ->
-            when (msg.what) {
-                MESSAGE_FAIL_CONNECT -> viewModel.whenMessageFail()
-                MESSAGE_CONNECT_SUCCESS -> viewModel.whenMessageSuccess()
-            }
-
-            msg.obj?.let {
-                viewModel.handleHandlerMessage(msg.what, it)
-                showToastMessage(it.toDecodedString())
-            }
-            true
-        }
-    }
+    private val defaultMaze = arrayOf(
+        arrayOf(PATH, PATH, PATH, BRICK, PATH, PATH, PATH),
+        arrayOf(BRICK, BRICK, PATH, BRICK, PATH, BRICK, PATH),
+        arrayOf(PATH, PATH, PATH, PATH, PATH, PATH, PATH),
+        arrayOf(PATH, BRICK, BRICK, BRICK, BRICK, BRICK, PATH),
+        arrayOf(PATH, PATH, PATH, PATH, PATH, PATH, EXIT)
+    )
+    private val curRes = Stack<String>()
+    private val mazeResults = mutableListOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        maze_start.setText(stringifyMaze(defaultMaze))
 
-        subscribeForBluetoothAvailability()
-
-        initViewPager(values())
-
-        manageDeepLinksIfAny(intent)
-    }
-
-    private fun subscribeForBluetoothAvailability() {
-        viewModel.getBluetoothAvailability().observe(this, {
-            viewModel.enableBluetoothIfNot(this)
-        })
-    }
-
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        manageDeepLinksIfAny(intent)
-
-    }
-
-    private fun manageDeepLinksIfAny(intent: Intent?) {
-        viewModel.checkIfDeepLinkItemsInIntent(intent)
-        viewModel.getDeepLinkItems().observe(this, { map ->
-            var textViewVisibility = GONE
-            var textViewText = EMPTY_STRING
-
-            if (!map.isNullOrEmpty()) {
-                textViewVisibility = VISIBLE
-                textViewText  = viewModel.makePresentationText(map, getString(R.string.deep_linking_called_text))
-            }
-
-            main_deep_link_text.apply {
-                visibility = textViewVisibility
-                text = textViewText
-            }
-        })
-    }
-
-    override fun onStart() {
-        super.onStart()
-        registerDeviceReceivers()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        unregisterDeviceReceiver()
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        finish()
-        return true
-    }
-
-    private fun initViewPager(pages: Array<MainFragmentStateAdapter.Page>) {
-        main_view_pager?.let { viewPager ->
-            val viewPagerAdapter = MainFragmentStateAdapter(this, pages)
-            viewPager.adapter = viewPagerAdapter
-
-            TabLayoutMediator(main_bottom_tab_layout, main_view_pager) { tab, position ->
-                tab.setText(viewPagerAdapter.getStringResIdByPage(pages[position]))
-            }.attach()
-
-            viewModel.getShouldScrollToPage().observe(this, { page ->
-                main_bottom_tab_layout?.getTabAt(page.ordinal)?.select()
-            })
-
-            if(viewModel.getBluetoothAdapter()?.isEnabled == true){
-                viewModel.setShouldScrollToPage(PAGE_PARED_DEVICES)
-            }
+        find_path_btn.setOnClickListener {
+            loading_progress.beVisible()
+            curRes.clear()
+            mazeResults.clear()
+            hideSofKeyboard(maze_start)
+            it.requestFocus()
+            loadMazeFromUi()
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == BLUETOOTH_START_REQUEST_CODE ) {
-            when (resultCode) {
-                Activity.RESULT_OK -> viewModel.setBluetoothAvailability(true)
-                else -> viewModel.enableBluetoothIfNot(this)
-            }
-        }
+    private fun hideSofKeyboard(editText: EditText) {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as
+                InputMethodManager
+        imm.hideSoftInputFromWindow(editText.windowToken, 0)
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when (requestCode) {
-            PERMISSION_REQUEST_CODE -> {
-                if (grantResults.isNotEmpty()) {
-                    viewModel.setBluetoothPermissionGranted(grantResults[0] == PackageManager.PERMISSION_GRANTED)
+    private fun loadMazeFromUi() {
+        val mazeStr = maze_start.text.toString()
+        val someRunnable = Runnable {
+            val maze = extractMazeFromString(mazeStr)
+
+
+            findPath(maze, 0, 0)
+
+            this@MainActivity.runOnUiThread {
+                if (mazeResults.isNotEmpty()) {
+                    val shortest = mazeResults.minBy { it.length }
+                    maze_result.text = stringifyMaze(maze, shortest)
+                    result_string.text = shortest
+                } else {
+                    maze_result.text = ""
+                    result_string.text = getString(R.string.no_path_found)
                 }
+
+                loading_progress.beGone()
             }
+        }
+
+        when (isValidInput(mazeStr)) {
+            true -> Executors.newSingleThreadExecutor().execute(someRunnable)
+            else -> complain(getString(R.string.not_valid_input))
         }
     }
 
-    private fun onDeviceFound(intent: Intent) {
-        val device: BluetoothDevice? =
-            intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
-        device?.let {
-            viewModel.addFoundDevice(it)
+    private fun isValidInput(mazeStr: String): Boolean {
+
+        return if (!mazeStr.contains(EXIT)) {
+            false
+        } else {
+            //TODO make more detailed validation
+            val carsLeft = mazeStr.replace("""[$PATH$BRICK$EXIT\s\n]""".toRegex(), "")
+            carsLeft.isEmpty()
         }
     }
 
-    private fun registerDeviceReceivers() {
-        registerReceiver(
-            deviceFoundReceiver,
-            IntentFilter().also {
-                it.addAction(ACTION_FOUND)
-                it.addAction(ACTION_DISCOVERY_STARTED)
-                it.addAction(ACTION_DISCOVERY_FINISHED)
-                it.addAction(ACTION_DISCOVERY_FAILED)
+    private fun extractMazeFromString(mazeStr: String): Array<Array<String>> {
+        val enteredRows = mazeStr.trim().split("\n")
+        val result: MutableList<Array<String>> = mutableListOf()
+        for (i in enteredRows.indices) {
+            val row = enteredRows[i].trim().split(ITEM_SEPARATOR).toTypedArray()
+            result.add(i, row)
+        }
+        return result.toTypedArray()
+    }
+
+    private fun complain(msg: String) {
+        loading_progress.beGone()
+        Snackbar.make(maze_start, msg, Snackbar.LENGTH_LONG).show()
+    }
+
+    private fun findPath(maze: Array<Array<String>>, row: Int, col: Int) {
+
+        if (!isNextStepAvailable(maze, row, col)) {
+            return
+        }
+
+        if (maze[row][col] == EXIT) {
+            mazeResults.add(
+                curRes.joinToString(separator = RESULT_SEPARATOR)
+            )
+            return
+        }
+
+        maze[row][col] = VISITED
+        addResultCoordinate(row, col)
+
+        findPath(maze, row, col + 1) // right
+        findPath(maze, row + 1, col) // down
+        findPath(maze, row, col - 1) // left
+        findPath(maze, row - 1, col) // up
+
+        maze[row][col] = PATH
+        removeLastCoordinateFromResult()
+    }
+
+    private fun stringifyMaze(
+        maze: Array<Array<String>>,
+        strResult: String? = null
+    ): String {
+        strResult?.let {
+            val resultArray = strResult.split(RESULT_SEPARATOR)
+
+            for (item in resultArray) {
+                val itemArr = item.split(ITEM_SEPARATOR)
+                maze[itemArr[0].toInt()][itemArr[1].toInt()] = VISITED
             }
-        )
+        }
 
-        registerReceiver(
-            deviceBoundStateChangedReceiver,
-            IntentFilter().also { it.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED) }
-        )
+        val sb = StringBuilder()
+        for (list in maze) {
+            for (item in list) {
+                sb.append("$item$ITEM_SEPARATOR")
+            }
+            sb.append("\n")
+        }
+
+        return sb.toString()
     }
 
-    private fun unregisterDeviceReceiver() {
-        unregisterReceiver(deviceFoundReceiver)
-        unregisterReceiver(deviceBoundStateChangedReceiver)
+    private fun removeLastCoordinateFromResult() {
+        curRes.pop()
     }
 
+    private fun addResultCoordinate(row: Int, col: Int) {
+        curRes.add("$row$ITEM_SEPARATOR$col")
+    }
+
+    private fun isNextStepAvailable(maze: Array<Array<String>>, row: Int, col: Int): Boolean {
+        val isInMaze = row < maze.size && col < maze[0].size && col >= 0 && row >= 0
+        if (!isInMaze) {
+            return false
+        }
+
+        val isAccessibleField = maze[row][col] == PATH || maze[row][col] == EXIT
+        return isInMaze && isAccessibleField
+    }
 }
