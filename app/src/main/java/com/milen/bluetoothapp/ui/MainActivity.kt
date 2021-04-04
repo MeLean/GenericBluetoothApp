@@ -44,6 +44,25 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val b = arrayOf("BBAR 150", "CDXE 515", "BKWR 250", "BTSQ 890", "DRTY 600")
+        val c = arrayOf("A", "B", "C", "D")
+        //stockSummary(b, c)
+
+        val a1 = "xyaabbbccccdefww"
+        val b1 = "xxxxyyyyabklmopq"
+        //longest(a1, b1)
+
+        val sentence = "is2 Thi1s T4est 3a"
+        //order(sentence)
+
+        val sentence1 = "Hey fellow warriors"
+        val sentence2 = "Welcome "
+        //spinWords(sentence1)
+        //spinWords(sentence2)
+
+        val human = 10
+        calculateYears(human)
+
         maze_start.setText(stringifyMaze(defaultMaze))
 
         find_path_btn.setOnClickListener {
@@ -56,11 +75,93 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun calculateYears(years: Int): Array<Int> {
+        return when (years) {
+            1 -> arrayOf(1, 15, 15)
+            2 -> arrayOf(2, 24, 24)
+            else -> {
+                val cat = 24 + (4 * (years - 2))
+                val dog = 24 + (5 * (years - 2))
+
+                arrayOf(years, cat, dog)
+            }
+        }
+    }
+
+    fun spinWords(sentence: String): String {
+        val arr = sentence.split(" ").toMutableList()
+        var result = sentence
+        for (i in 0 until arr.size) {
+            if (arr[i].length >= 5) {
+                result = result.replace(arr[i], arr[i].reversed(), false)
+            }
+        }
+
+        return result
+    }
+
+    private fun order(sentence: String): String {
+        //test.assert_equals(order("is2 Thi1s T4est 3a"), "Thi1s is2 3a T4est")
+        val separator = " "
+        val arr = sentence.split(separator).toMutableList()
+
+        var num = 1
+        var str = arr.find { it.contains(num.toString()) }
+
+        while (num < arr.size) {
+            val indexFound = arr.indexOf(str)
+            swapValues(arr, num - 1, indexFound)
+            num++
+            str = arr.find { it.contains(num.toString()) }
+        }
+
+        return arr.joinToString(separator = separator)
+    }
+
+    private fun swapValues(arr: MutableList<String>, curIndex: Int, indexFound: Int) {
+        val temp = arr[curIndex]
+        arr[curIndex] = arr[indexFound]
+        arr[indexFound] = temp
+    }
+
+
+    private fun longest(a: String, b: String): String {
+        //espected result -> "abcdefklmopqwxy"
+        val result = StringBuilder()
+
+        result.append(a)
+        result.append(b)
+
+        return result.toSortedSet().joinToString(separator = "")
+    }
+
+    fun stockSummary(lstOfArt: Array<String>, lstOfCat: Array<String>): String {
+        val result = StringBuilder()
+        val arts = lstOfArt.toMutableList()
+
+        lstOfCat.forEach { catChar ->
+            var sum = 0
+            var curStr: String? = arts.find { it.startsWith(catChar) }
+
+            while (curStr != null) {
+                sum += curStr.filter { it.isDigit() }.toInt()
+                arts.remove(curStr)
+                curStr = arts.find { it.startsWith(catChar) }
+            }
+
+            result.append("($catChar : $sum) - ")
+        }
+
+        val resStr = result.toString().dropLast(3)
+        return resStr
+    }
+
     private fun hideSofKeyboard(editText: EditText) {
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as
                 InputMethodManager
         imm.hideSoftInputFromWindow(editText.windowToken, 0)
     }
+
 
     private fun loadMazeFromUi() {
         val mazeStr = maze_start.text.toString()
