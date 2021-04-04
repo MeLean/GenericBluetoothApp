@@ -11,6 +11,7 @@ import com.milen.bluetoothapp.R
 import com.milen.bluetoothapp.utils.beGone
 import com.milen.bluetoothapp.utils.beVisible
 import kotlinx.android.synthetic.main.activity_main.*
+import java.math.BigInteger
 import java.util.*
 import java.util.concurrent.Executors
 
@@ -44,24 +45,23 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val b = arrayOf("BBAR 150", "CDXE 515", "BKWR 250", "BTSQ 890", "DRTY 600")
-        val c = arrayOf("A", "B", "C", "D")
-        //stockSummary(b, c)
 
-        val a1 = "xyaabbbccccdefww"
-        val b1 = "xxxxyyyyabklmopq"
-        //longest(a1, b1)
+//        stockSummary(
+//            arrayOf("BBAR 150", "CDXE 515", "BKWR 250", "BTSQ 890", "DRTY 600"),
+//            arrayOf("A", "B", "C", "D")
+//        )
 
-        val sentence = "is2 Thi1s T4est 3a"
-        //order(sentence)
+//        longest("xyaabbbccccdefww", "xxxxyyyyabklmopq")
 
-        val sentence1 = "Hey fellow warriors"
-        val sentence2 = "Welcome "
-        //spinWords(sentence1)
-        //spinWords(sentence2)
+//        order("is2 Thi1s T4est 3a")
 
-        val human = 10
-        calculateYears(human)
+//        spinWords("Hey fellow warriors")
+//        spinWords("Welcome ")
+
+//        calculateYears(10)
+
+
+        decomp(22)
 
         maze_start.setText(stringifyMaze(defaultMaze))
 
@@ -73,6 +73,76 @@ class MainActivity : AppCompatActivity() {
             it.requestFocus()
             loadMazeFromUi()
         }
+    }
+
+    private fun decomp(m: Int): String {
+        val primeArray = getPrime(m)
+
+        var fact = 1.toBigInteger()
+        for (i in 1..m) {
+            fact *= i.toBigInteger()
+        }
+
+        val results: MutableMap<BigInteger, Int> = mutableMapOf()
+        for (j in 0 until primeArray.size  ) {
+            val curValue = primeArray[j].toBigInteger()
+            while (fact % curValue == 0.toBigInteger()){
+                fact /= curValue
+                addResult(results, curValue)
+            }
+        }
+
+        return printResult(results)
+    }
+
+    private fun printResult(results: MutableMap<BigInteger, Int>): String {
+        val resultsStr = StringBuilder()
+        val multiply = " * "
+        results.keys.forEach {
+            if (results[it] ?: 0 <= 1) {
+                resultsStr.append("$it$multiply")
+            } else {
+                resultsStr.append("$it^${results[it]}$multiply")
+            }
+        }
+
+
+        return resultsStr.toString().dropLast(multiply.length)
+    }
+
+    private fun addResult(results: MutableMap<BigInteger, Int>, curKey: BigInteger) {
+        if (results.containsKey(curKey)) {
+            val nextValue = results[curKey]?.plus(1) ?: 1
+            results[curKey] = nextValue
+        } else {
+            results[curKey] = 1
+        }
+    }
+
+    private fun getPrime(num: Int): MutableList<Int> {
+        val result = mutableListOf<Int>()
+        var i = 2
+        while (i <= num) {
+            if (checkPrimeNumber(i)) {
+                result.add(i)
+            }
+
+            i++
+        }
+
+        return result
+    }
+
+    private fun checkPrimeNumber(num: Int): Boolean {
+        var flag = true
+        for (i in 2..num / 2) {
+            if (num % i == 0) {
+                flag = false
+                break
+            }
+        }
+
+        return flag
     }
 
     fun calculateYears(years: Int): Array<Int> {
@@ -124,7 +194,6 @@ class MainActivity : AppCompatActivity() {
         arr[indexFound] = temp
     }
 
-
     private fun longest(a: String, b: String): String {
         //espected result -> "abcdefklmopqwxy"
         val result = StringBuilder()
@@ -162,12 +231,10 @@ class MainActivity : AppCompatActivity() {
         imm.hideSoftInputFromWindow(editText.windowToken, 0)
     }
 
-
     private fun loadMazeFromUi() {
         val mazeStr = maze_start.text.toString()
         val someRunnable = Runnable {
             val maze = extractMazeFromString(mazeStr)
-
 
             findPath(maze, 0, 0)
 
