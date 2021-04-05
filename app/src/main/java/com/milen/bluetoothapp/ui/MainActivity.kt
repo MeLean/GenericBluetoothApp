@@ -61,7 +61,9 @@ class MainActivity : AppCompatActivity() {
 //        calculateYears(10)
 
 
-        decomp(22)
+        //decomp(4000)
+
+        findSumOfDividers(200)
 
         maze_start.setText(stringifyMaze(defaultMaze))
 
@@ -73,6 +75,18 @@ class MainActivity : AppCompatActivity() {
             it.requestFocus()
             loadMazeFromUi()
         }
+    }
+
+    private fun findSumOfDividers(number: Int): Int {
+        val n1 = 3
+        val n2 = 5
+        var result = 0
+
+        for (i in n1 until number) {
+            if ((i % n1 == 0) or (i % n2 == 0)) result += i
+        }
+
+        return result
     }
 
     private fun decomp(m: Int): String {
