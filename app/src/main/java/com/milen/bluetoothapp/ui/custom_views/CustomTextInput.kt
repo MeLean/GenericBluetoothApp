@@ -56,7 +56,7 @@ class CustomTextInput  @JvmOverloads constructor(
         attributeArray?.getResourceId(R.styleable.CustomTextInput_cti_hint, DEFAULT_REST_VALUE)
             ?.let {
                 when {
-                    it != DEFAULT_REST_VALUE -> input_layout.setHint(it)
+                    it != DEFAULT_REST_VALUE -> input_layout.setHint(context.getString(it))
                     else -> input_layout.hint = strValue
                 }
             }
@@ -139,7 +139,7 @@ class CustomTextInput  @JvmOverloads constructor(
 
     fun setHintRes(@StringRes strRes: Int) {
         input_edit_text.setHint(strRes)
-        input_layout.setHint(strRes)
+        input_layout.hint = context.getString(strRes)
     }
 
     fun setText(text: String = "") {
